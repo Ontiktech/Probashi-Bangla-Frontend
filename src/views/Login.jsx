@@ -4,10 +4,10 @@
 import { useState } from 'react'
 
 // Next Imports
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 // MUI Imports
-import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -29,12 +29,33 @@ import Logo from '@components/layout/shared/Logo'
 import themeConfig from '@configs/themeConfig'
 
 // Hook Imports
+import { userLoginSchema } from '@/schema/userLogin.schema'
 import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
+import { LoadingButton } from '@mui/lab'
+import { CircularProgress, FormControl } from '@mui/material'
+import Image from 'next/image'
+import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 
 const LoginV2 = ({ mode }) => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors }
+  } = useForm({
+    defaultValues: {
+      email: '',
+      password: ''
+    },
+    mode: 'onBlur',
+    resolver: yupResolver(userLoginSchema)
+  })
 
   // Vars
   const darkImg = '/images/pages/auth-v2-mask-1-dark.png'
@@ -60,11 +81,13 @@ const LoginV2 = ({ mode }) => {
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
-  const handleLogin = async () => {
+  const handleLogin = async data => {
+    setLoading(true)
+
     try {
       const res = await signIn('credentials', {
-        email: 'a@gmail.com',
-        password: '123',
+        email: data.email,
+        password: data.password,
         redirect: false
       })
 
@@ -73,10 +96,19 @@ const LoginV2 = ({ mode }) => {
 
         router.push(redirectURL)
       } else {
-        console.log(res)
+        if (res?.error) {
+          const error = JSON.parse(res.error)
+
+          setError('email', {
+            type: 'manual',
+            message: error?.message
+          })
+        }
       }
     } catch (error) {
-      console.log(error)
+      toast.error(error?.message || 'Something went wrong! Please try again later.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -91,13 +123,21 @@ const LoginV2 = ({ mode }) => {
         )}
       >
         <div className='pli-6 max-lg:mbs-40 lg:mbe-24'>
-          <img
+          <Image
             src={characterIllustration}
             alt='character-illustration'
             className='max-bs-[673px] max-is-full bs-auto'
+            width={673}
+            height={500}
           />
         </div>
-        <img src={authBackground} className='absolute bottom-[4%] z-[-1] is-full max-md:hidden' />
+        <Image
+          src={authBackground}
+          className='absolute bottom-[4%] z-[-1] is-full max-md:hidden'
+          alt='auth-background'
+          width={1000}
+          height={1000}
+        />
       </div>
       <div className='flex justify-center items-center bs-full bg-backgroundPaper !min-is-full p-6 md:!min-is-[unset] md:p-12 md:is-[480px]'>
         <Link className='absolute block-start-5 sm:block-start-[38px] inline-start-6 sm:inline-start-[38px]'>
@@ -108,44 +148,64 @@ const LoginV2 = ({ mode }) => {
             <Typography variant='h4'>{`Welcome to ${themeConfig.templateName}! 👋🏻`}</Typography>
             <Typography className='mbs-1'>Please sign-in to your account and start the adventure</Typography>
           </div>
-          <form
-            noValidate
-            autoComplete='off'
-            onSubmit={e => {
-              e.preventDefault()
-              router.push('/')
-            }}
-            className='flex flex-col gap-5'
-          >
-            <TextField autoFocus fullWidth label='Email' />
-            <TextField
-              fullWidth
-              label='Password'
-              type={isPasswordShown ? 'text' : 'password'}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position='end'>
-                    <IconButton
-                      size='small'
-                      edge='end'
-                      onClick={handleClickShowPassword}
-                      onMouseDown={e => e.preventDefault()}
-                    >
-                      <i className={isPasswordShown ? 'ri-eye-off-line' : 'ri-eye-line'} />
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-            />
+          <form noValidate autoComplete='off' onSubmit={handleSubmit(handleLogin)} className='flex flex-col gap-5'>
+            <FormControl>
+              <TextField
+                autoFocus
+                fullWidth
+                label='Email'
+                {...register('email')}
+                error={Boolean(errors?.email)}
+                helperText={errors?.email?.message}
+              />
+            </FormControl>
+            <FormControl>
+              <TextField
+                fullWidth
+                label='Password'
+                type={isPasswordShown ? 'text' : 'password'}
+                {...register('password')}
+                error={Boolean(errors?.password)}
+                helperText={errors?.password?.message}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <IconButton
+                        size='small'
+                        edge='end'
+                        onClick={handleClickShowPassword}
+                        onMouseDown={e => e.preventDefault()}
+                      >
+                        <i className={isPasswordShown ? 'ri-eye-off-line' : 'ri-eye-line'} />
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </FormControl>
+
             <div className='flex justify-between items-center flex-wrap gap-x-3 gap-y-1'>
               <FormControlLabel control={<Checkbox />} label='Remember me' />
-              <Typography className='text-end' color='primary' component={Link}>
+              <Typography className='text-end' color='primary' component={Link} href='/forgot-password'>
                 Forgot password?
               </Typography>
             </div>
-            <Button fullWidth variant='contained' type='submit' onClick={handleLogin}>
+            <LoadingButton
+              loading={loading}
+              fullWidth
+              variant='contained'
+              type='submit'
+              loadingIndicator={
+                <CircularProgress
+                  size={20}
+                  sx={{
+                    color: theme => theme.palette.primary.contrastText // Use a valid theme color
+                  }}
+                />
+              }
+            >
               Log In
-            </Button>
+            </LoadingButton>
             <div className='flex justify-center items-center flex-wrap gap-2'>
               <Typography>New on our platform?</Typography>
               <Typography component={Link} color='primary'>
