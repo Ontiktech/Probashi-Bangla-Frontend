@@ -1,19 +1,25 @@
 import { Avatar, Button, Card, CardContent, CardHeader, Typography } from '@mui/material'
+import Link from 'next/link'
 import CourseLists from './_components/CourseLists'
 
 const CoursePage = () => {
   return (
     <Card>
       <CardHeader
-        title={<Typography variant='h6'>Courses</Typography>}
-        subheader='List of courses'
+        title={<Typography variant='h6'>Course Lists</Typography>}
+        subheader='Course catalog showcasing topics, durations, and enrollments.'
         avatar={
           <Avatar>
             <i className='ri-book-line'></i>
           </Avatar>
         }
         action={
-          <Button variant='contained' startIcon={<i className='ri-add-line'></i>}>
+          <Button
+            variant='contained'
+            startIcon={<i className='ri-add-line'></i>}
+            component={Link}
+            href='/courses/create'
+          >
             Create New
           </Button>
         }

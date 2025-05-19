@@ -1,12 +1,13 @@
 'use client'
 import { useMemo, useReducer } from 'react'
 
-import { Button, Stack, Table, TableBody, TableContainer, TableHead, TablePagination } from '@mui/material'
+import { Table, TableBody, TableContainer, TableHead, TablePagination } from '@mui/material'
 
 import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 
 import CustomTableBody from '@/components/common/CustomTableBody'
 import CustomTableHeader from '@/components/common/CustomTableHeader'
+import ActionDropdown from './ActionDropdown'
 
 const dummyData = [
   {
@@ -138,16 +139,7 @@ const CourseLists = () => {
         id: 'action',
         header: 'Action',
         enableSorting: false,
-        cell: ({ row }) => (
-          <Stack direction='row' alignItems='center' justifyContent='center' spacing={2}>
-            <Button startIcon={<i className='ri-edit-box-line'></i>} variant='contained' size='small'>
-              Edit
-            </Button>
-            <Button startIcon={<i className='ri-delete-bin-7-line'></i>} variant='outlined' color='error' size='small'>
-              Delete
-            </Button>
-          </Stack>
-        ),
+        cell: ({ row }) => <ActionDropdown id={row?.original?.id} />,
         meta: {
           alignHeader: 'center'
         }
