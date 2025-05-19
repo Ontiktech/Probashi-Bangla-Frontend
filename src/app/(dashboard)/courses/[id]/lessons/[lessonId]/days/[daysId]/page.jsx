@@ -29,8 +29,6 @@ const DaysPage = async ({ params: { id, lessonId, daysId } }) => {
   const {
     data: { day }
   } = response
-
-  console.log(day)
   return (
     <Card>
       <CardHeader
