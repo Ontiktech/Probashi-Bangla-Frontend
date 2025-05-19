@@ -80,7 +80,7 @@ const EditUser = ({ session, userId }) => {
         }
 
         const response = await getAppUserById(userId)
-        console.log('Response:', response)
+     
 
         if (response?.data?.user) {
           const userData = response.data.user
@@ -100,7 +100,6 @@ const EditUser = ({ session, userId }) => {
         }
       } catch (error) {
         toast.error(error.message || 'Failed to load user data')
-        console.error('Error fetching user:', error)
         router.replace('/user')
       } finally {
         setInitialLoading(false)
@@ -121,7 +120,7 @@ const EditUser = ({ session, userId }) => {
         userId
       )
 
-      console.log('Update response:', response)
+
 
       if (response?.status === 'validationError') {
         populateValidationErrors(response?.errors, setError)
@@ -134,7 +133,6 @@ const EditUser = ({ session, userId }) => {
         toast.error(response?.message || 'Failed to update user')
       }
     } catch (error) {
-      console.error('Update error:', error)
       toast.error(error?.message || 'An unexpected error occurred')
     } finally {
       setLoading(false)

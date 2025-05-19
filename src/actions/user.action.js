@@ -47,7 +47,6 @@ export const createAppUser = async userData => {
     // Let apiResponse handle errors
     return apiResponse(response)
   } catch (error) {
-    console.error('Create user error:', error)
     return {
       status: 'error',
       message: error.message || 'Failed to create user'
@@ -69,7 +68,6 @@ export const getAllAppUsers = async () => {
 
     return response.data?.users || []
   } catch (error) {
-    console.error('Error fetching users:', error)
     throw error
   }
 }
@@ -86,11 +84,8 @@ export const getAppUserById = async userId => {
       cache: 'no-store'
     })
 
-    console.log('Response', response)
-
     return apiResponse(response)
   } catch (error) {
-    console.error('Get user error:', error)
     throw error
   }
 }
@@ -111,7 +106,6 @@ export const updateAppUser = async (data, id) => {
 
     return apiResponse(response)
   } catch (error) {
-    console.error('Update user error:', error)
     throw error
   }
 }
@@ -128,10 +122,8 @@ export const deleteAppUser = async userId => {
       },
       cache: 'no-store'
     })
-
     return apiResponse(response);
   } catch (error) {
-    console.error('Delete user error:', error)
     return {
       success: false,
       message: error.message || 'Network error'

@@ -165,7 +165,6 @@ const UserListTable = () => {
         throw new Error(result?.message || 'Failed to delete user')
       }
     } catch (err) {
-      console.error('Delete error:', err)
       setSnackbar({
         open: true,
         message: err.message || 'An unexpected error occurred',
