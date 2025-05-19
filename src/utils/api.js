@@ -31,7 +31,7 @@ export const fetchData = async (url, options = {}) => {
         ...fetchOpt,
         headers: {
           ...fetchOpt.headers,
-          Authorization: `Bearer ${session?.access_token}`
+          Authorization: `Bearer ${session?.token}`
         }
       }
     }

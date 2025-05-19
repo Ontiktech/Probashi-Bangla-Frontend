@@ -1,31 +1,16 @@
 'use client'
-import { useMemo, useReducer } from 'react'
+import { useCallback, useEffect, useMemo, useReducer } from 'react'
 
 import { Table, TableBody, TableContainer, TableHead, TablePagination } from '@mui/material'
 
 import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 
+import { getAllCourses } from '@/actions/course.server.action'
 import CustomTableBody from '@/components/common/CustomTableBody'
 import CustomTableHeader from '@/components/common/CustomTableHeader'
+import { toCapitalize } from '@/utils/common'
+import { debounce } from 'lodash'
 import ActionDropdown from './ActionDropdown'
-
-const dummyData = [
-  {
-    id: 1,
-    name: 'Course 1',
-    duration: '2 hours'
-  },
-  {
-    id: 2,
-    name: 'Course 2',
-    duration: '2 hours'
-  },
-  {
-    id: 3,
-    name: 'Course 3',
-    duration: '2 hours'
-  }
-]
 
 /**
  * set initial state
@@ -36,9 +21,9 @@ const initialState = {
   search: '',
   page: 1,
   limit: 10,
-  loading: false,
-  totalCourses: dummyData.length ?? 0,
-  courses: dummyData ?? [],
+  loading: true,
+  totalCourses: 0,
+  courses: [],
   isError: false,
   error: null
 }
@@ -84,56 +69,73 @@ const reducer = (state, action) => {
 const CourseLists = () => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const { page, limit, loading, totalCourses, courses, isError, error, sortOrder, sortBy } = state
+  const { page, limit, loading, totalCourses, courses, isError, search, error, sortOrder, sortBy } = state
 
   /**
    * fetch courses function
    */
-  //   const fetchCourses = useCallback(async () => {
-  //     dispatch({ type: 'SET_LOADING', payload: true })
-  //     dispatch({ type: 'RESET_ERROR' })
+  const fetchCourses = useCallback(async () => {
+    dispatch({ type: 'SET_LOADING', payload: true })
+    dispatch({ type: 'RESET_ERROR' })
 
-  //     try {
-  //       const response = await getAllCourses(page, limit, search)
+    try {
+      const response = await getAllCourses(page, limit, search, sortOrder, sortBy)
 
-  //       if (response?.items) {
-  //         dispatch({ type: 'SET_COURSES', payload: response?.items })
-  //         dispatch({ type: 'SET_TOTAL_COURSES', payload: response?.totalItems })
-  //       }
-  //     } catch (error) {
-  //       dispatch({ type: 'SET_ERROR', payload: error.message || 'Failed to fetch users.' })
-  //     } finally {
-  //       dispatch({ type: 'SET_LOADING', payload: false })
-  //     }
-  //   }, [page, limit, search, selectedStatus, sortBy, sortOrder, isPopular])
+      if (response?.status === 'success' && response?.items?.length > 0) {
+        dispatch({ type: 'SET_COURSES', payload: response?.items })
+        dispatch({ type: 'SET_TOTAL_COURSES', payload: response?.totalItems ?? 0 })
+      }
+    } catch (error) {
+      dispatch({ type: 'SET_ERROR', payload: error.message || 'Failed to fetch users.' })
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false })
+    }
+  }, [page, limit, search, sortBy, sortOrder])
 
-  //   /**
-  //    * debouncing fetch categories by useEffect
-  //    */
-  //   useEffect(() => {
-  //     const debouncedFetch = debounce(() => {
-  //       fetchCourses()
-  //     }, 500)
+  /**
+   * debouncing fetch categories by useEffect
+   */
+  useEffect(() => {
+    const debouncedFetch = debounce(() => {
+      fetchCourses()
+    }, 500)
 
-  //     debouncedFetch()
+    debouncedFetch()
 
-  //     return () => {
-  //       debouncedFetch.cancel()
-  //     }
-  //   }, [fetchCourses])
+    return () => {
+      debouncedFetch.cancel()
+    }
+  }, [fetchCourses])
 
   /**
    * define react table rows
    */
   const columns = useMemo(
     () => [
-      columnHelper.accessor('name', {
-        header: 'Name',
-        cell: ({ row }) => row?.original?.name
+      columnHelper.accessor('title', {
+        header: 'Title',
+        cell: ({ row }) => row?.original?.title
       }),
-      columnHelper.accessor('duration', {
-        header: 'Name',
-        cell: ({ row }) => row?.original?.duration
+      columnHelper.accessor('Total Days', {
+        header: 'Total Days',
+        cell: ({ row }) => row?.original?.totalDays,
+        meta: {
+          alignHeader: 'center'
+        }
+      }),
+      columnHelper.accessor('language', {
+        header: 'Language',
+        cell: ({ row }) => toCapitalize(row?.original?.language ?? ''),
+        meta: {
+          alignHeader: 'center'
+        }
+      }),
+      columnHelper.accessor('targetLanguage', {
+        header: 'Target Language',
+        cell: ({ row }) => toCapitalize(row?.original?.targetLanguage ?? ''),
+        meta: {
+          alignHeader: 'center'
+        }
       }),
       columnHelper.display({
         id: 'action',
@@ -169,13 +171,6 @@ const CourseLists = () => {
   })
 
   /**
-   * create category toggler
-   */
-  const toggleCreateCategory = () => {
-    dispatch({ type: 'TOGGLE_CREATE_CATEGORY_MODAL' })
-  }
-
-  /**
    * page change handler for react table
    * @param event
    * @param newPage
@@ -204,36 +199,6 @@ const CourseLists = () => {
     dispatch({ type: 'SET_SORT', payload: { sortOrder: newSortOrder, sortBy: newSortBy } })
   }
 
-  /**
-   * toggle edit modal handler
-   * @param e
-   * @param id
-   */
-  const handleEditModal = (e, id) => {
-    e.stopPropagation()
-    e.preventDefault()
-    dispatch({ type: 'TOGGLE_EDIT_CATEGORY_MODAL' })
-    dispatch({ type: 'SET_SELECTED_EDIT_ID', payload: id ?? null })
-  }
-
-  /**
-   * toggle delete modal handler
-   * @param e
-   * @param id
-   */
-  const toggleDeleteModal = (e, id) => {
-    e.stopPropagation()
-    e.preventDefault()
-    dispatch({ type: 'TOGGLE_DELETE' })
-    dispatch({ type: 'SET_SELECTED_DELETE_ID', payload: id ?? null })
-  }
-
-  /**
-   * search type handler
-   * @param event
-   * @returns
-   */
-  const handleSearch = event => dispatch({ type: 'SET_SEARCH', payload: event.target.value })
   return (
     <>
       <TableContainer>
