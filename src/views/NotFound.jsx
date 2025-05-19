@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 
 // Hook Imports
 import { useImageVariant } from '@core/hooks/useImageVariant'
+import Image from 'next/image'
 
 const NotFound = ({ mode }) => {
   // Vars
@@ -28,7 +29,9 @@ const NotFound = ({ mode }) => {
           <Typography variant='h4'>Page Not Found ⚠️</Typography>
           <Typography>We couldn&#39;t find the page you are looking for.</Typography>
         </div>
-        <img
+        <Image
+          width={500}
+          height={500}
           alt='error-illustration'
           src='/images/illustrations/characters/3.png'
           className='object-cover bs-[400px] md:bs-[450px] lg:bs-[500px]'
@@ -37,7 +40,13 @@ const NotFound = ({ mode }) => {
           Back to Home
         </Button>
       </div>
-      <img src={miscBackground} className='absolute bottom-0 z-[-1] is-full max-md:hidden' />
+      <Image
+        width={1000}
+        height={1000}
+        src={miscBackground}
+        alt='misc background'
+        className='absolute bottom-0 z-[-1] is-full max-md:hidden'
+      />
     </div>
   )
 }
