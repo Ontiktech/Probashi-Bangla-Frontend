@@ -1,6 +1,6 @@
 'use server'
 
-import { fetchData } from '@/utils/api'
+import { apiResponse, fetchData } from '@/utils/api'
 
 export const getAllCourses = async (page, limit, search, sortOrder = 'desc', sortBy = 'createdAt') => {
   try {
@@ -20,6 +20,21 @@ export const getAllCourses = async (page, limit, search, sortOrder = 'desc', sor
     } else {
       throw new Error(response?.error?.message)
     }
+  } catch (error) {
+    return {
+      status: 'error',
+      message: error?.message
+    }
+  }
+}
+
+export const getCourseDetails = async id => {
+  try {
+    const response = await fetchData(`admin/courses/${id}`, {
+      method: 'GET'
+    })
+
+    return apiResponse(response)
   } catch (error) {
     return {
       status: 'error',

@@ -1,3 +1,5 @@
+import { getCourseDetails } from '@/actions/course.server.action'
+import { toCapitalize } from '@/utils/common'
 import {
   Avatar,
   Button,
@@ -16,17 +18,27 @@ import {
 } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
-const CourseDetails = ({ params: { id } }) => {
+const CourseDetails = async ({ params: { id } }) => {
+  const response = await getCourseDetails(id)
+
+  if (response?.status === 'notFound') {
+    notFound()
+  } else if (response?.status === 'error') {
+    throw new Error(response?.message)
+  }
+
+  const {
+    data: { course }
+  } = response
+
+  console.log({ course })
+
   return (
     <Card>
       <CardHeader
-        title={
-          <Stack direction='row' spacing={1} alignItems='center'>
-            <Typography variant='h6'>Course 1</Typography>
-            <Chip label='New' size='small' color='primary' />
-          </Stack>
-        }
+        title={<Typography variant='h6'>{course?.title}</Typography>}
         avatar={
           <Avatar>
             <i className='ri-add-circle-fill'></i>
@@ -62,42 +74,44 @@ const CourseDetails = ({ params: { id } }) => {
                 <TableCell>Image</TableCell>
                 <TableCell>
                   <Avatar variant='rounded'>
-                    <Image src='/images/avatars/1.png' alt='avatar' width={50} height={50} />
+                    <Image src={course?.imagePath || '/images/avatars/1.png'} alt='avatar' width={50} height={50} />
                   </Avatar>
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Title</TableCell>
-                <TableCell>Course 1</TableCell>
+                <TableCell>{course?.title}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Description</TableCell>
-                <TableCell>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem eum omnis sit autem reprehenderit
-                  dignissimos error nobis velit animi praesentium?
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Total Days</TableCell>
-                <TableCell>15</TableCell>
+                <TableCell>{course?.description}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Language</TableCell>
-                <TableCell>Bangla</TableCell>
+                <TableCell>{toCapitalize(course?.language)}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Target Language</TableCell>
-                <TableCell>English</TableCell>
+                <TableCell>{toCapitalize(course?.targetLanguage)}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Difficulty</TableCell>
                 <TableCell>
-                  <Chip label='Beginner' size='small' color='primary' icon={<i className='ri-star-line'></i>} />
+                  <Chip
+                    label={toCapitalize(course?.difficulty)}
+                    size='small'
+                    color='primary'
+                    icon={<i className='ri-star-line'></i>}
+                  />
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Estimated Hours</TableCell>
-                <TableCell>15</TableCell>
+                <TableCell>{course?.estimatedHours}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Created AT</TableCell>
+                <TableCell>{course?.createdAt}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

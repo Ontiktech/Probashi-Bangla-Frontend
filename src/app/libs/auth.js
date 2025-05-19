@@ -10,8 +10,6 @@ export const authOptions = {
       async authorize(credentials) {
         const { email, password } = credentials
 
-        console.log({ email, password })
-
         try {
           // Login API Call to match the user credentials and receive user data in response along with his role
           const res = await fetch(`${process.env.API_URL}/admin/auth/login`, {
@@ -40,7 +38,6 @@ export const authOptions = {
 
           return null
         } catch (e) {
-          console.log({ e })
           throw new Error(e.message)
         }
       }
