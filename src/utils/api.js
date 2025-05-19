@@ -31,7 +31,7 @@ export const fetchData = async (url, options = {}) => {
         ...fetchOpt,
         headers: {
           ...fetchOpt.headers,
-          Authorization: `Bearer ${session?.access_token}`
+          Authorization: `Bearer ${session?.token}`
         }
       }
     }
@@ -79,7 +79,7 @@ export const apiResponse = async (response, str = null, type = 'tag') => {
     return {
       ...response,
       status: 'success',
-      message: response?.message
+      message: response?.data?.data?.message
     }
   } else if (response?.statusCode === 422) {
     return { status: 'validationError', errors: response?.error?.errors }

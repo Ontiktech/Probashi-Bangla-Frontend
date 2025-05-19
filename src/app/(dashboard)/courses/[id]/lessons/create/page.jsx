@@ -1,14 +1,14 @@
 import { Avatar, Button, Card, CardContent, CardHeader, Chip, Stack, Typography } from '@mui/material'
 import Link from 'next/link'
-import CreateDays from './_components/CreateDays'
+import CreateLesson from './_components/CreateLesson'
 
-const CreateDaysPage = ({ params: { id } }) => {
+const CreateLessonPage = ({ params: { id, dayId } }) => {
   return (
     <Card>
       <CardHeader
         title={
           <Stack direction='row' spacing={1} alignItems='center'>
-            <Typography variant='h6'>Create Course Day</Typography>
+            <Typography variant='h6'>Create Lesson for Course 1</Typography>
             <Chip label='New' size='small' color='primary' />
           </Stack>
         }
@@ -30,9 +30,9 @@ const CreateDaysPage = ({ params: { id } }) => {
         }
       />
       <CardContent>
-        <CreateDays />
+        <CreateLesson />
       </CardContent>
     </Card>
   )
 }
-export default CreateDaysPage
+export default CreateLessonPage
