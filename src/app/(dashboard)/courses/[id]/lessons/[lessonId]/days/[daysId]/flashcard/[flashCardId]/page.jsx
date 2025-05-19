@@ -26,13 +26,15 @@ const FlashCardPage = async ({ params: { id, lessonId, daysId, flashCardId } }) 
     throw new Error(response?.message)
   }
 
+  console.log({ response })
+
   const {
-    data: { flashCard }
+    data: { flash_card }
   } = response
   return (
     <Card>
       <CardHeader
-        title={<Typography variant='h6'>{flashCard?.frontText}</Typography>}
+        title={<Typography variant='h6'>{flash_card?.frontText}</Typography>}
         avatar={
           <Avatar>
             <i className='ri-add-circle-fill'></i>
@@ -60,7 +62,7 @@ const FlashCardPage = async ({ params: { id, lessonId, daysId, flashCardId } }) 
                 <TableCell>Image</TableCell>
                 <TableCell>
                   <Image
-                    src={flashCard?.imageUrl ?? '/images/avatars/1.png'}
+                    src={flash_card?.imageUrl ?? '/images/avatars/1.png'}
                     width={100}
                     height={100}
                     alt='Flash Card'
@@ -69,39 +71,39 @@ const FlashCardPage = async ({ params: { id, lessonId, daysId, flashCardId } }) 
               </TableRow>
               <TableRow>
                 <TableCell>Audio</TableCell>
-                <TableCell>{flashCard?.audioUrl}</TableCell>
+                <TableCell>{flash_card?.audioUrl}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Front Text</TableCell>
-                <TableCell>{flashCard?.frontText}</TableCell>
+                <TableCell>{flash_card?.frontText}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Front Subtext</TableCell>
-                <TableCell>{flashCard?.frontSubtext}</TableCell>
+                <TableCell>{flash_card?.frontSubtext}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Back Text</TableCell>
-                <TableCell>{flashCard?.backText}</TableCell>
+                <TableCell>{flash_card?.backText}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Back Subtext</TableCell>
-                <TableCell>{flashCard?.backSubtext}</TableCell>
+                <TableCell>{flash_card?.backSubtext}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Example</TableCell>
-                <TableCell>{flashCard?.example}</TableCell>
+                <TableCell>{flash_card?.example}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Example Translation</TableCell>
-                <TableCell>{flashCard?.exampleTranslation}</TableCell>
+                <TableCell>{flash_card?.exampleTranslation}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Usage Notes</TableCell>
-                <TableCell>{flashCard?.usageNotes}</TableCell>
+                <TableCell>{flash_card?.usageNotes}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Card Order</TableCell>
-                <TableCell>{flashCard?.cardOrder}</TableCell>
+                <TableCell>{flash_card?.cardOrder}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
