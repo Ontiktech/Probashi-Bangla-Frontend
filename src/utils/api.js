@@ -52,6 +52,7 @@ export const fetchData = async (url, options = {}) => {
       throw new Error('API URL is not defined in environment variables.')
     }
 
+   
     const response = await fetch(`${apiUrl}/${url}`, fetchOpt)
 
     const data = await response.json()

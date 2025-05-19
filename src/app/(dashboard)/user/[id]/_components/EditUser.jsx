@@ -80,7 +80,6 @@ const EditUser = ({ session, userId }) => {
         }
 
         const response = await getAppUserById(userId)
-     
 
         if (response?.data?.user) {
           const userData = response.data.user
@@ -120,17 +119,21 @@ const EditUser = ({ session, userId }) => {
         userId
       )
 
-
-
-      if (response?.status === 'validationError') {
-        populateValidationErrors(response?.errors, setError)
-        toast.error('Please fix the validation errors')
-      } else if (response?.status === 200) {
+      // Check the status code first
+      if (response?.statusCode === 200) {
+        toast.success(response.data?.message || 'User updated successfully!')
         router.replace('/user')
-        toast.success(response.message)
-      } else {
-    
-        toast.error(response?.message || 'Failed to update user')
+      }
+      // Handle validation errors (assuming they would come with a different status code)
+      else if (response?.statusCode === 400 || response?.errors) {
+        if (response?.errors) {
+          populateValidationErrors(response.errors, setError)
+        }
+        toast.error(response.data?.message || 'Please fix the validation errors')
+      }
+      // Handle other error cases
+      else {
+        toast.error(response?.data?.message || 'Failed to update user')
       }
     } catch (error) {
       toast.error(error?.message || 'An unexpected error occurred')
