@@ -9,8 +9,6 @@ export const createNewCourse = async data => {
 
   const response = await clientApi.postFormData('admin/courses', data, {}, { Authorization: `${session?.token}` })
 
-  console.log({ response })
-
   return apiResponse(
     {
       ...response,

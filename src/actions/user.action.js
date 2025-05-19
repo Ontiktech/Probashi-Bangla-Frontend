@@ -2,7 +2,7 @@
 
 const API_URL = process.env.API_URL
 
-import { fetchData, apiResponse } from '../utils/api'
+import { apiResponse, fetchData } from '../utils/api'
 
 /**
  * Handles API responses consistently
@@ -62,8 +62,6 @@ export const getAllAppUsers = async () => {
   try {
     const response = await fetchData(`admin/app-users`)
 
-    console.log(response)
-
     if (response?.statusCode !== 200) {
       throw new Error(response.data?.message || 'Failed to fetch users')
     }
@@ -105,8 +103,6 @@ export const updateAppUser = async (data, id) => {
       body: JSON.stringify(data),
       cache: 'no-store'
     })
-
-    console.log(response)
 
     return apiResponse(response)
   } catch (error) {

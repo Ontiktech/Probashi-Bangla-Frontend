@@ -69,7 +69,6 @@ export const fetchData = async (url, options = {}) => {
  * @throws {Error} - If the response status code is not 201 or 422
  */
 export const apiResponse = async (response, str = null, type = 'tag') => {
-  console.log({ response })
   if (response?.statusCode === 201 || response?.statusCode === 200) {
     if (str && type === 'tag') {
       revalidateTag(str)

@@ -10,8 +10,6 @@ const postFormData = async (endpoint, data, params, headers) => {
       }
     })
 
-    console.log(response)
-
     return {
       status: response?.status,
       data: response?.data,
@@ -19,7 +17,11 @@ const postFormData = async (endpoint, data, params, headers) => {
     }
   } catch (error) {
     return {
-      message: error?.response?.data?.message || 'An error occurred',
+      message:
+        error?.response?.data?.error?.message ||
+        error?.response?.data?.message ||
+        error?.message ||
+        'An error occurred',
       status: error?.response?.status || 500,
       errors: error?.response?.data?.error?.errors || null
     }
@@ -43,7 +45,11 @@ const patchFormData = async (endpoint, data, params, headers) => {
     }
   } catch (error) {
     return {
-      message: error?.response?.data?.error?.message || 'An error occurred',
+      message:
+        error?.response?.data?.error?.message ||
+        error?.response?.data?.message ||
+        error?.message ||
+        'An error occurred',
       status: error?.response?.status || 500,
       errors: error?.response?.data?.error?.errors || null
     }
