@@ -12,7 +12,7 @@ const verticalMenuData = () => [
   {
     label: 'User',
     href: '/user',
-    icon: 'ri-information-line'
+    icon: 'ri-user-3-fill'
   },
   {
     label: 'About',

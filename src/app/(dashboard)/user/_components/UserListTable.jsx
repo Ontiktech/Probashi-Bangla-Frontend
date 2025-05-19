@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import {
   Avatar,
   Box,
@@ -55,7 +55,6 @@ const UserListTable = () => {
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedUser, setSelectedUser] = useState(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -85,19 +84,40 @@ const UserListTable = () => {
     fetchUsers()
   }, [])
 
-  useEffect(() => {}, [users])
+  // Enhanced search functionality
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm) return users
+    
+    const lowercasedSearch = searchTerm.toLowerCase()
+    
+    return users.filter(user => {
+      const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase()
+      const email = user.email?.toLowerCase() || ''
+      const phone = user.phoneNumber || ''
+      const language = user.nativeLanguage?.toLowerCase() || ''
+      const proficiency = user.proficiencyLevel?.toLowerCase() || ''
+      const status = user.verified?.toLowerCase() || ''
+      
+      return (
+        fullName.includes(lowercasedSearch) ||
+        email.includes(lowercasedSearch) ||
+        phone.includes(searchTerm) || // Keep phone number search as-is for better number matching
+        language.includes(lowercasedSearch) ||
+        proficiency.includes(lowercasedSearch) ||
+        status.includes(lowercasedSearch)
+      )
+    })
+  }, [users, searchTerm])
 
-  const filteredUsers = users.filter(user => {
-    return (
-      searchTerm === '' ||
-      `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.phoneNumber?.includes(searchTerm)
-    )
-  })
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setPage(0)
+  }, [searchTerm])
 
   // Pagination
-  const paginatedUsers = filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+  const paginatedUsers = useMemo(() => {
+    return filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+  }, [filteredUsers, page, rowsPerPage])
 
   const handleMenuOpen = (event, user) => {
     setAnchorEl(event.currentTarget)
@@ -115,11 +135,10 @@ const UserListTable = () => {
 
   const handleDelete = () => {
     setDeleteDialogOpen(true)
-    setAnchorEl(null) // Do NOT reset selectedUser here
+    setAnchorEl(null)
   }
 
   const confirmDelete = async () => {
-    console.log('Deleting:', selectedUser)
     if (!selectedUser?.id) {
       setSnackbar({
         open: true,
@@ -134,15 +153,9 @@ const UserListTable = () => {
       setLoading(true)
       const userId = selectedUser.id
       const result = await deleteAppUser(userId)
-      console.log('Delete result:', result)
 
-      // Check if deletion was successful (adjust based on your API response)
-      if (result && result.statusCode === 200) {
-        // Refresh the user list
-        const updatedUsers = await getAllAppUsers()
-        setUsers(updatedUsers)
-
-        // Show success message
+      if (result?.statusCode === 200) {
+        setUsers(prev => prev.filter(user => user.id !== userId))
         setSnackbar({
           open: true,
           message: result.data?.message || 'User deleted successfully',
@@ -161,7 +174,7 @@ const UserListTable = () => {
     } finally {
       setLoading(false)
       setDeleteDialogOpen(false)
-      setSelectedUser(null) // Clear selected user
+      setSelectedUser(null)
     }
   }
 
@@ -180,7 +193,7 @@ const UserListTable = () => {
     }
   }
 
-  if (loading) {
+  if (loading && users.length === 0) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
         <CircularProgress />
@@ -191,54 +204,58 @@ const UserListTable = () => {
   if (error) {
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity='error'>{error}</Alert>
+        <Alert severity="error">{error}</Alert>
       </Box>
     )
   }
 
   return (
     <Box sx={{ p: 3 }}>
-      {/* Filters */}
+      {/* Search Filter */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <TextField
             fullWidth
-            label='Search Users'
-            variant='outlined'
-            size='small'
+            label="Search Users"
+            variant="outlined"
+            size="small"
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by name, email, phone, etc."
+            InputProps={{
+              sx: { backgroundColor: 'background.paper' }
+            }}
           />
         </Grid>
       </Grid>
 
       {/* Users Table */}
-      <Paper elevation={3}>
-        <TableContainer>
-          <Table>
+      <Paper elevation={3} sx={{ overflow: 'hidden' }}>
+        <TableContainer sx={{ maxHeight: 'calc(100vh - 200px)' }}>
+          <Table stickyHeader>
             <TableHead>
               <TableRow>
                 <TableCell>User</TableCell>
                 <TableCell>Contact</TableCell>
-                <TableCell align='center'>Language</TableCell>
-                <TableCell align='center'>Activity</TableCell>
-                <TableCell align='center'>Status</TableCell>
-                <TableCell align='center'>Actions</TableCell>
+                <TableCell align="center">Language</TableCell>
+                <TableCell align="center">Activity</TableCell>
+                <TableCell align="center">Status</TableCell>
+                <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {users.length > 0 ? (
-                users.map(user => (
+              {paginatedUsers.length > 0 ? (
+                paginatedUsers.map((user) => (
                   <TableRow key={user.id} hover>
                     <TableCell>
-                      <Stack direction='row' alignItems='center' spacing={2}>
+                      <Stack direction="row" alignItems="center" spacing={2}>
                         <Avatar src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} />
                         <Box>
-                          <Typography fontWeight='medium'>
+                          <Typography fontWeight="medium">
                             {user.firstName} {user.lastName}
                           </Typography>
-                          <Typography variant='body2' color='text.secondary'>
+                          <Typography variant="body2" color="text.secondary">
                             {user.nativeLanguage} speaker
                           </Typography>
                         </Box>
@@ -246,43 +263,48 @@ const UserListTable = () => {
                     </TableCell>
                     <TableCell>
                       <Typography>{user.email || 'No email'}</Typography>
-                      <Typography variant='body2' color='text.secondary'>
+                      <Typography variant="body2" color="text.secondary">
                         {user.phoneNumber}
                       </Typography>
                     </TableCell>
-                    <TableCell align='center'>
+                    <TableCell align="center">
                       <Chip
                         label={user.proficiencyLevel}
                         color={
                           user.proficiencyLevel === ProficiencyLevel.BEGINNER
                             ? 'info'
                             : user.proficiencyLevel === ProficiencyLevel.INTERMEDIATE
-                              ? 'primary'
-                              : 'success'
+                            ? 'primary'
+                            : 'success'
                         }
                       />
                     </TableCell>
-                    <TableCell align='center'>
+                    <TableCell align="center">
                       <Box>
                         <Typography>XP: {user.xpPoints}</Typography>
                         <Typography>Streak: {user.streak} days</Typography>
-                        <Typography variant='body2'>Last: {formatDate(user.lastLoginAt)}</Typography>
+                        <Typography variant="body2">
+                          Last: {formatDate(user.lastLoginAt)}
+                        </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell align='center'>
+                    <TableCell align="center">
                       <Chip
                         label={user.verified}
                         color={
                           user.verified === AppUserVerificationStatus.VERIFIED
                             ? 'success'
                             : user.verified === AppUserVerificationStatus.UNVERIFIED
-                              ? 'warning'
-                              : 'error'
+                            ? 'warning'
+                            : 'error'
                         }
                       />
                     </TableCell>
-                    <TableCell align='center'>
-                      <IconButton aria-label='actions' onClick={e => handleMenuOpen(e, user)}>
+                    <TableCell align="center">
+                      <IconButton
+                        aria-label="actions"
+                        onClick={(e) => handleMenuOpen(e, user)}
+                      >
                         <MoreVertIcon />
                       </IconButton>
                     </TableCell>
@@ -290,8 +312,10 @@ const UserListTable = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} align='center'>
-                    <Typography>No users found</Typography>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body1">
+                      {searchTerm ? 'No matching users found' : 'No users available'}
+                    </Typography>
                   </TableCell>
                 </TableRow>
               )}
@@ -300,52 +324,45 @@ const UserListTable = () => {
         </TableContainer>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
-          component='div'
+          component="div"
           count={filteredUsers.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={(e, newPage) => setPage(newPage)}
-          onRowsPerPageChange={e => {
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => {
             setRowsPerPage(parseInt(e.target.value, 10))
             setPage(0)
           }}
         />
       </Paper>
 
-      {/* Action Menu */}
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+      {/* Context Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
         <MenuItem onClick={() => handleEdit(selectedUser?.id)}>Edit</MenuItem>
         <MenuItem onClick={handleDelete}>Delete</MenuItem>
       </Menu>
 
-      {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-        <DialogTitle>Edit User</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Edit form for {selectedUser?.firstName} {selectedUser?.lastName}
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-          <Button onClick={() => setEditDialogOpen(false)} color='primary'>
-            Save Changes
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to delete {selectedUser?.firstName} {selectedUser?.lastName}?
+            Are you sure you want to delete {selectedUser?.firstName}{' '}
+            {selectedUser?.lastName}?
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
           <Button
             onClick={confirmDelete}
-            color='error'
+            color="error"
             disabled={loading}
             startIcon={loading ? <CircularProgress size={20} /> : null}
           >
@@ -354,7 +371,7 @@ const UserListTable = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar for notifications */}
+      {/* Snackbar Notification */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
@@ -365,7 +382,7 @@ const UserListTable = () => {
           onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
           sx={{ width: '100%' }}
-          variant='filled'
+          variant="filled"
         >
           {snackbar.message}
         </Alert>
