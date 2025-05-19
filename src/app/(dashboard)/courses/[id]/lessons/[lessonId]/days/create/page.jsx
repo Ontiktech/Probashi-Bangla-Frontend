@@ -1,14 +1,26 @@
+import { getLessonDetails } from '@/actions/lesson.server.action'
 import { Avatar, Button, Card, CardContent, CardHeader, Chip, Stack, Typography } from '@mui/material'
 import Link from 'next/link'
 import CreateDays from './_components/CreateDays'
 
-const CreateDaysPage = ({ params: { id, lessonId } }) => {
+const CreateDaysPage = async ({ params: { id, lessonId } }) => {
+  const response = await getLessonDetails(lessonId)
+
+  if (response?.status === 'notFound') {
+    notFound()
+  } else if (response?.status === 'error') {
+    throw new Error(response?.message)
+  }
+
+  const {
+    data: { lesson }
+  } = response
   return (
     <Card>
       <CardHeader
         title={
           <Stack direction='row' spacing={1} alignItems='center'>
-            <Typography variant='h6'>Create Course Day for Lesson 1</Typography>
+            <Typography variant='h6'>Create day for {lesson?.title}</Typography>
             <Chip label='New' size='small' color='primary' />
           </Stack>
         }
@@ -30,7 +42,7 @@ const CreateDaysPage = ({ params: { id, lessonId } }) => {
         }
       />
       <CardContent>
-        <CreateDays />
+        <CreateDays courseId={id} lessonId={lessonId} />
       </CardContent>
     </Card>
   )

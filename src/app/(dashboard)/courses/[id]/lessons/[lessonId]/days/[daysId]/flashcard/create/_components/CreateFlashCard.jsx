@@ -1,20 +1,26 @@
 'use client'
+import { createNewFlashCard } from '@/actions/flashCard.client.action'
 import Input from '@/components/common/form/Input'
 import SingleImageUploader from '@/components/common/form/SingleImageUploader'
 import { createFlashCardSchema } from '@/schema/flashCard.schema'
+import { populateValidationErrors } from '@/utils/common'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Button, Grid } from '@mui/material'
+import { Button, CircularProgress, Grid } from '@mui/material'
+import { useRouter } from 'next-nprogress-bar'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 
-const CreateFlashCard = () => {
+const CreateFlashCard = ({ courseId, lessonId, daysId }) => {
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
   const {
     control,
     formState: { errors },
     handleSubmit,
     watch,
-    setValue
+    setValue,
+    setError
   } = useForm({
     defaultValues: {
       frontText: '',
@@ -33,7 +39,24 @@ const CreateFlashCard = () => {
   })
 
   const onSubmit = async data => {
-    console.log(data)
+    setLoading(true)
+
+    try {
+      const response = await createNewFlashCard({ courseId, lessonId, dayId: daysId, ...data })
+
+      if (response?.status === 'validationError') {
+        populateValidationErrors(response?.errors, setError)
+      } else if (response?.status === 'success') {
+        router.push(`/courses/${courseId}/lessons/${lessonId}/days/${daysId}`)
+        toast.success(response?.message)
+      } else {
+        throw new Error(response?.message)
+      }
+    } catch (error) {
+      toast.error(error.message || 'Failed to create lesson')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -75,7 +98,6 @@ const CreateFlashCard = () => {
           <Input
             label='Front Text'
             control={control}
-            errors={!!errors.frontText}
             name='frontText'
             error={!!errors.frontText}
             helperText={errors.frontText?.message}
@@ -87,7 +109,6 @@ const CreateFlashCard = () => {
           <Input
             label='Front Subtext'
             control={control}
-            errors={!!errors.frontSubtext}
             name='frontSubtext'
             error={!!errors.frontSubtext}
             helperText={errors.frontSubtext?.message}
@@ -99,7 +120,6 @@ const CreateFlashCard = () => {
           <Input
             label='Back Text'
             control={control}
-            errors={!!errors.backText}
             name='backText'
             error={!!errors.backText}
             helperText={errors.backText?.message}
@@ -111,7 +131,6 @@ const CreateFlashCard = () => {
           <Input
             label='Back Subtext'
             control={control}
-            errors={!!errors.backSubtext}
             name='backSubtext'
             error={!!errors.backSubtext}
             helperText={errors.backSubtext?.message}
@@ -123,7 +142,6 @@ const CreateFlashCard = () => {
           <Input
             label='Example'
             control={control}
-            errors={!!errors.example}
             name='example'
             error={!!errors.example}
             helperText={errors.example?.message}
@@ -135,7 +153,6 @@ const CreateFlashCard = () => {
           <Input
             label='Example Translation'
             control={control}
-            errors={!!errors.exampleTranslation}
             name='exampleTranslation'
             error={!!errors.exampleTranslation}
             helperText={errors.exampleTranslation?.message}
@@ -148,7 +165,6 @@ const CreateFlashCard = () => {
           <Input
             label='Usage Notes'
             control={control}
-            errors={!!errors.usageNotes}
             name='usageNotes'
             error={!!errors.usageNotes}
             helperText={errors.usageNotes?.message}
@@ -160,7 +176,6 @@ const CreateFlashCard = () => {
           <Input
             label='Card Order'
             control={control}
-            errors={!!errors.cardOrder}
             name='cardOrder'
             error={!!errors.cardOrder}
             helperText={errors.cardOrder?.message}
@@ -171,8 +186,13 @@ const CreateFlashCard = () => {
         </Grid>
 
         <Grid item xs={12} sx={{ textAlign: 'right' }}>
-          <Button type='submit' variant='contained' startIcon={<i className='ri-save-fill'></i>}>
-            Save
+          <Button
+            type='submit'
+            variant='contained'
+            startIcon={loading ? <CircularProgress size={20} color='inherit' /> : <i className='ri-save-fill'></i>}
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save'}
           </Button>
         </Grid>
       </Grid>

@@ -1,14 +1,26 @@
+import { getDayDetails } from '@/actions/day.server.action'
 import { Avatar, Button, Card, CardContent, CardHeader, Chip, Stack, Typography } from '@mui/material'
 import Link from 'next/link'
 import CreateFlashCard from './_components/CreateFlashCard'
 
-const CreateFlashCardPage = ({ params: { id, lessonId, daysId } }) => {
+const CreateFlashCardPage = async ({ params: { id, lessonId, daysId } }) => {
+  const response = await getDayDetails(daysId)
+
+  if (response?.status === 'notFound') {
+    notFound()
+  } else if (response?.status === 'error') {
+    throw new Error(response?.message)
+  }
+
+  const {
+    data: { day }
+  } = response
   return (
     <Card>
       <CardHeader
         title={
           <Stack direction='row' spacing={1} alignItems='center'>
-            <Typography variant='h6'>Create new flash card for Day 1</Typography>
+            <Typography variant='h6'>Create new flash card for {day?.title}</Typography>
             <Chip label='New' size='small' color='primary' />
           </Stack>
         }
@@ -30,7 +42,7 @@ const CreateFlashCardPage = ({ params: { id, lessonId, daysId } }) => {
         }
       />
       <CardContent>
-        <CreateFlashCard />
+        <CreateFlashCard courseId={id} lessonId={lessonId} daysId={daysId} />
       </CardContent>
     </Card>
   )

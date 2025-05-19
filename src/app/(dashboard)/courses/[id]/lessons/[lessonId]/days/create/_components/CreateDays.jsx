@@ -1,36 +1,52 @@
 'use client'
+import { createNewDay } from '@/actions/day.server.action'
 import Input from '@/components/common/form/Input'
-import { courseSchema } from '@/schema/course.schema'
+import { createDaysSchema } from '@/schema/days.schema'
+import { populateValidationErrors } from '@/utils/common'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Button, Grid } from '@mui/material'
+import { Button, CircularProgress, Grid } from '@mui/material'
+import { useRouter } from 'next-nprogress-bar'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 
-const CreateDays = () => {
+const CreateDays = ({ courseId, lessonId }) => {
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
   const {
     control,
     formState: { errors },
     handleSubmit,
-    watch,
-    setValue
+    setError
   } = useForm({
     defaultValues: {
+      dayNumber: 0,
       title: '',
-      description: '',
-      totalDays: 0,
-      language: '',
-      targetLanguage: '',
-      difficulty: '',
-      estimatedHours: 0,
-      imagePath: null
+      description: ''
     },
     mode: 'onBlur',
-    resolver: yupResolver(courseSchema)
+    resolver: yupResolver(createDaysSchema)
   })
 
   const onSubmit = async data => {
-    console.log(data)
+    setLoading(true)
+
+    try {
+      const response = await createNewDay({ lessonId, ...data })
+
+      if (response?.status === 'validationError') {
+        populateValidationErrors(response?.errors, setError)
+      } else if (response?.status === 'success') {
+        router.push(`/courses/${courseId}/lessons/${lessonId}`)
+        toast.success(response?.message)
+      } else {
+        throw new Error(response?.message)
+      }
+    } catch (error) {
+      toast.error(error.message || 'Failed to create lesson')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -40,10 +56,9 @@ const CreateDays = () => {
           <Input
             label='Total Days'
             control={control}
-            errors={!!errors.totalDays}
-            name='totalDays'
-            error={!!errors.totalDays}
-            helperText={errors.totalDays?.message}
+            name='dayNumber'
+            error={!!errors.dayNumber}
+            helperText={errors.dayNumber?.message}
             disabled={loading}
             type='number'
             fullWidth
@@ -52,7 +67,6 @@ const CreateDays = () => {
         <Grid item xs={12}>
           <Input
             control={control}
-            errors={!!errors.title}
             name='title'
             label='Title'
             error={!!errors.title}
@@ -64,7 +78,6 @@ const CreateDays = () => {
         <Grid item xs={12}>
           <Input
             control={control}
-            errors={!!errors.description}
             name='description'
             label='Description'
             error={!!errors.description}
@@ -76,8 +89,13 @@ const CreateDays = () => {
         </Grid>
 
         <Grid item xs={12} sx={{ textAlign: 'right' }}>
-          <Button type='submit' variant='contained' startIcon={<i className='ri-save-fill'></i>}>
-            Save
+          <Button
+            type='submit'
+            variant='contained'
+            startIcon={loading ? <CircularProgress size={20} color='inherit' /> : <i className='ri-save-fill'></i>}
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save'}
           </Button>
         </Grid>
       </Grid>

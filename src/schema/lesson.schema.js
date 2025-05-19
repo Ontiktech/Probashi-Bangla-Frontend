@@ -5,6 +5,7 @@ const SUPPORTED_FORMATS = ['audio/mpeg']
 const IMAGE_MAX_SIZE = 5 * 1024 * 1024
 
 export const createLessonSchema = yup.object().shape({
+  title: yup.string().required('Please enter a title!').max(255, 'Title must be less than 255 characters!'),
   estimatedMinutes: yup
     .number()
     .required('Please enter a estimated minutes!')

@@ -1,25 +1,31 @@
 'use client'
+import { createNewLesson } from '@/actions/lesson.client.action'
 import Input from '@/components/common/form/Input'
 import Select from '@/components/common/form/Select'
 import SingleImageUploader from '@/components/common/form/SingleImageUploader'
 import { difficulties } from '@/schema/course.schema'
 import { createLessonSchema } from '@/schema/lesson.schema'
-import { toCapitalize } from '@/utils/common'
+import { populateValidationErrors, toCapitalize } from '@/utils/common'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Button, Grid } from '@mui/material'
+import { Button, CircularProgress, Grid } from '@mui/material'
+import { useRouter } from 'next-nprogress-bar'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 
-const CreateLesson = () => {
+const CreateLesson = ({ courseId }) => {
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
   const {
     control,
     formState: { errors },
     handleSubmit,
     watch,
-    setValue
+    setValue,
+    setError
   } = useForm({
     defaultValues: {
+      title: '',
       estimatedMinutes: 0,
       difficulty: '',
       lessonOrder: 0,
@@ -30,7 +36,24 @@ const CreateLesson = () => {
   })
 
   const onSubmit = async data => {
-    console.log(data)
+    setLoading(true)
+
+    try {
+      const response = await createNewLesson({ courseId, ...data })
+
+      if (response?.status === 'validationError') {
+        populateValidationErrors(response?.errors, setError)
+      } else if (response?.status === 'success') {
+        router.push(`/courses/${courseId}`)
+        toast.success(response?.message)
+      } else {
+        throw new Error(response?.message)
+      }
+    } catch (error) {
+      toast.error(error.message || 'Failed to create lesson')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -54,9 +77,19 @@ const CreateLesson = () => {
         </Grid>
         <Grid item xs={12}>
           <Input
+            label='Title'
+            control={control}
+            name='title'
+            error={!!errors.title}
+            helperText={errors.title?.message}
+            disabled={loading}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Input
             label='Estimated Minutes'
             control={control}
-            errors={!!errors.estimatedMinutes}
             name='estimatedMinutes'
             error={!!errors.estimatedMinutes}
             helperText={errors.estimatedMinutes?.message}
@@ -85,7 +118,6 @@ const CreateLesson = () => {
         <Grid item xs={12}>
           <Input
             control={control}
-            errors={!!errors.lessonOrder}
             name='lessonOrder'
             label='Lesson Order'
             error={!!errors.lessonOrder}
@@ -95,10 +127,27 @@ const CreateLesson = () => {
             fullWidth
           />
         </Grid>
+        <Grid item xs={12}>
+          <Input
+            control={control}
+            name='xpReward'
+            label='Xp Reward'
+            error={!!errors.xpReward}
+            helperText={errors.xpReward?.message}
+            disabled={loading}
+            type='number'
+            fullWidth
+          />
+        </Grid>
 
         <Grid item xs={12} sx={{ textAlign: 'right' }}>
-          <Button type='submit' variant='contained' startIcon={<i className='ri-save-fill'></i>}>
-            Save
+          <Button
+            type='submit'
+            variant='contained'
+            startIcon={loading ? <CircularProgress size={20} color='inherit' /> : <i className='ri-save-fill'></i>}
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save'}
           </Button>
         </Grid>
       </Grid>

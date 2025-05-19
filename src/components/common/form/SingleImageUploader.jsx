@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar, Box, Button, Typography } from '@mui/material'
+import { Avatar, Box, Button, Stack, Typography } from '@mui/material'
 import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
@@ -21,16 +21,28 @@ const SingleImageUploader = ({
 }) => {
   const profileImage = watch(name)
   const [selectedImage, setSelectedImage] = useState(null)
+  const [invalidFileInfo, setInvalidFileInfo] = useState(null)
   const onChangeRef = useRef(null)
 
   useEffect(() => {
     if (profileImage instanceof File || (Array.isArray(profileImage) && profileImage[0] instanceof File)) {
       const file = Array.isArray(profileImage) ? profileImage[0] : profileImage
-      const reader = new FileReader()
-      reader.onload = () => {
-        setSelectedImage(reader.result)
+      const isImage = file.type.startsWith('image/')
+
+      if (isImage) {
+        const reader = new FileReader()
+        reader.onload = () => {
+          setSelectedImage(reader.result)
+          setInvalidFileInfo(null)
+        }
+        reader.readAsDataURL(file)
+      } else {
+        setSelectedImage(null)
+        setInvalidFileInfo({
+          name: file.name,
+          size: (file.size / 1024).toFixed(2) + ' KB'
+        })
       }
-      reader.readAsDataURL(file)
     }
   }, [profileImage])
 
@@ -45,14 +57,23 @@ const SingleImageUploader = ({
     e.stopPropagation()
     setValue(name, null)
     setSelectedImage(null)
+    setInvalidFileInfo(null)
   }
 
   const handleFileSelect = file => {
-    if (file) {
+    const isImage = file.type.startsWith('image/')
+    if (isImage) {
       const previewUrl = URL.createObjectURL(file)
       setSelectedImage(previewUrl)
-      onChangeRef.current?.(file)
+      setInvalidFileInfo(null)
+    } else {
+      setSelectedImage(null)
+      setInvalidFileInfo({
+        name: file.name,
+        size: (file.size / 1024).toFixed(2) + ' KB'
+      })
     }
+    onChangeRef.current?.(file)
   }
 
   const onDrop = useCallback(acceptedFiles => {
@@ -82,7 +103,11 @@ const SingleImageUploader = ({
             <>
               <Box
                 {...getRootProps()}
-                className={`aspect-[16/5] border border-dashed ${errors[name] ? 'border-red-500' : 'border-gray-300'} rounded-md hover:${errors[name] ? 'border-red-50' : 'bg-gray-50'} cursor-pointer transition delay-75 relative overflow-hidden w-full h-full`}
+                className={`aspect-[16/5] border border-dashed ${
+                  errors[name] ? 'border-red-500' : 'border-gray-300'
+                } rounded-md hover:${
+                  errors[name] ? 'border-red-50' : 'bg-gray-50'
+                } cursor-pointer transition delay-75 relative overflow-hidden w-full h-full`}
               >
                 <input {...getInputProps()} />
                 {selectedImage && (
@@ -91,7 +116,7 @@ const SingleImageUploader = ({
                       height={200}
                       width={200}
                       src={selectedImage}
-                      alt='Profile'
+                      alt='Preview'
                       className='w-full h-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
                     />
                     <Button
@@ -105,6 +130,7 @@ const SingleImageUploader = ({
                     </Button>
                   </>
                 )}
+
                 <Box
                   component='div'
                   sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}
@@ -123,9 +149,29 @@ const SingleImageUploader = ({
         }}
       />
 
+      {/* Default or error message */}
       <Typography color={errors[name] ? 'error' : 'text.secondary'} sx={{ mt: 2 }}>
         {errors[name] ? errors[name].message : defaultMessage}
       </Typography>
+
+      {/* Show file info if not image */}
+      {invalidFileInfo && (
+        <Stack
+          direction='row'
+          spacing={2}
+          alignItems='center'
+          sx={{ mt: 2 }}
+          className='border border-gray-200 px-3 py-2 rounded-md'
+        >
+          <Avatar>
+            <i class='ri-folder-music-line'></i>
+          </Avatar>
+          <Box component='div'>
+            <Typography variant='h6'>{invalidFileInfo?.name}</Typography>
+            <Typography variant='body2'>{invalidFileInfo?.size}</Typography>
+          </Box>
+        </Stack>
+      )}
     </Box>
   )
 }

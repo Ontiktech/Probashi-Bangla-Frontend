@@ -20,7 +20,8 @@ const CreateNewCourse = () => {
     formState: { errors },
     handleSubmit,
     watch,
-    setValue
+    setValue,
+    setError
   } = useForm({
     defaultValues: {
       title: '',
