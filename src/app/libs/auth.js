@@ -10,6 +10,8 @@ export const authOptions = {
       async authorize(credentials) {
         const { email, password } = credentials
 
+        console.log({ email, password })
+
         try {
           // Login API Call to match the user credentials and receive user data in response along with his role
           const res = await fetch(`${process.env.API_URL}/admin/auth/login`, {
@@ -19,12 +21,7 @@ export const authOptions = {
             },
             body: JSON.stringify({ email, password })
           })
-
-          if (res.status === 401) {
-            throw new Error(JSON.stringify(data))
-          } else if (res.status === 400) {
-            throw new Error(JSON.stringify(data))
-          }
+          const data = await res.json()
 
           if (res.status === 200) {
             /*
@@ -32,16 +29,18 @@ export const authOptions = {
              * user data below. Below return statement will set the user object in the token and the same is set in
              * the session which will be accessible all over the app.
              */
-            const data = await res.json()
 
             return {
               user: data?.data?.user,
               token: data?.data?.jwt
             }
+          } else {
+            throw new Error(JSON.stringify(data?.error))
           }
 
           return null
         } catch (e) {
+          console.log({ e })
           throw new Error(e.message)
         }
       }
