@@ -16,13 +16,14 @@ import { verticalNavClasses } from '../../utils/menuClasses'
 // Styled Component Imports
 import StyledBackdrop from '../../styles/StyledBackdrop'
 import StyledVerticalNav from '../../styles/vertical/StyledVerticalNav'
-import StyledVerticalNavContainer from '../../styles/vertical/StyledVerticalNavContainer'
 import StyledVerticalNavBgColorContainer from '../../styles/vertical/StyledVerticalNavBgColorContainer'
+import StyledVerticalNavContainer from '../../styles/vertical/StyledVerticalNavContainer'
 
 // Style Imports
 import styles from '../../styles/vertical/verticalNavBgImage.module.css'
 
 // Default Config Imports
+import Image from 'next/image'
 import { defaultBreakpoints, verticalNavToggleDuration } from '../../defaultConfigs'
 
 const VerticalNav = props => {
@@ -187,7 +188,9 @@ const VerticalNav = props => {
         {backgroundImage && (
           // eslint-disable-next-line lines-around-comment
           /* VerticalNav Background Image */
-          <img
+          <Image
+            width={widthContext}
+            height={widthContext}
             className={classnames(verticalNavClasses.image, styles.root)}
             src={backgroundImage}
             alt='verticalNav background'
