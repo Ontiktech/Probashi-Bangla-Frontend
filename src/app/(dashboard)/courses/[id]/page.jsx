@@ -17,7 +17,7 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 
-const CourseDetails = () => {
+const CourseDetails = ({ params: { id } }) => {
   return (
     <Card>
       <CardHeader
@@ -34,14 +34,24 @@ const CourseDetails = () => {
         }
         subheader='Show and manage course details.'
         action={
-          <Button
-            variant='outlined'
-            component={Link}
-            href='/courses'
-            startIcon={<i className='ri-arrow-left-line'></i>}
-          >
-            Back
-          </Button>
+          <Stack direction='row' spacing={1}>
+            <Button
+              variant='contained'
+              component={Link}
+              href={`/courses/${id}/lessons/create`}
+              startIcon={<i className='ri-add-large-line'></i>}
+            >
+              Create Lesson
+            </Button>
+            <Button
+              variant='outlined'
+              component={Link}
+              href='/courses'
+              startIcon={<i className='ri-arrow-left-line'></i>}
+            >
+              Back
+            </Button>
+          </Stack>
         }
       />
       <CardContent>
@@ -94,39 +104,31 @@ const CourseDetails = () => {
         </TableContainer>
 
         <Typography variant='h6' sx={{ mt: 6 }}>
-          Course Schedule
+          Course Lessons
         </Typography>
 
         <TableContainer component={Card} sx={{ mt: 3 }}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell align='center'>Day</TableCell>
-                <TableCell>Title</TableCell>
+                <TableCell align='center'>Estimated Minutes</TableCell>
+                <TableCell>Difficulty</TableCell>
+                <TableCell align='center'>Xp Reward</TableCell>
+                <TableCell align='center'>Lesson Order</TableCell>
+                <TableCell align='center'>Audio Intro</TableCell>
                 <TableCell align='center'>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell align='center'>2</TableCell>
-                <TableCell>Course Day 1</TableCell>
-                <TableCell align='center'>
-                  <Stack direction='row' spacing={1} alignItems='center' justifyContent='center'>
-                    <Button variant='contained' component={Link} href='/courses/1/days/1' size='small'>
-                      <i className='ri-eye-fill'></i>
-                    </Button>
-                    <Button variant='contained' size='small' color='error'>
-                      <i class='ri-delete-bin-6-line'></i>
-                    </Button>
-                  </Stack>
-                </TableCell>
-              </TableRow>
-              <TableRow>
+                <TableCell align='center'>10</TableCell>
+                <TableCell>Easy</TableCell>
                 <TableCell align='center'>5</TableCell>
-                <TableCell>Course Day 2</TableCell>
+                <TableCell align='center'>1</TableCell>
+                <TableCell align='center'>Yes</TableCell>
                 <TableCell align='center'>
                   <Stack direction='row' spacing={1} alignItems='center' justifyContent='center'>
-                    <Button variant='contained' component={Link} href='/courses/1/days/1' size='small'>
+                    <Button variant='contained' component={Link} href={`/courses/${id}/lessons/1`} size='small'>
                       <i className='ri-eye-fill'></i>
                     </Button>
                     <Button variant='contained' size='small' color='error'>
