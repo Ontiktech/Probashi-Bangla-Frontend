@@ -1,19 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Grid, Stack } from '@mui/material'
-import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import LoadingButton from '@mui/lab/LoadingButton'
-import { toast } from 'react-toastify'
+import { Grid, Stack } from '@mui/material'
 import { useRouter } from 'next-nprogress-bar'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 import * as yup from 'yup'
 
-import { Box, CircularProgress } from '@mui/material'
 import Input from '@components/common/form/Input'
 import Select from '@components/common/form/Select'
+import { Box, CircularProgress } from '@mui/material'
 
 import { getAppUserById, updateAppUser } from '@/actions/user.action'
+import { populateValidationErrors } from '@/utils/common'
 
 // Define the enums locally since they're not imported
 const ProficiencyLevel = {
