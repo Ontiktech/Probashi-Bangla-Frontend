@@ -87,9 +87,9 @@ const UserListTable = () => {
   // Enhanced search functionality
   const filteredUsers = useMemo(() => {
     if (!searchTerm) return users
-    
+
     const lowercasedSearch = searchTerm.toLowerCase()
-    
+
     return users.filter(user => {
       const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase()
       const email = user.email?.toLowerCase() || ''
@@ -97,7 +97,7 @@ const UserListTable = () => {
       const language = user.nativeLanguage?.toLowerCase() || ''
       const proficiency = user.proficiencyLevel?.toLowerCase() || ''
       const status = user.verified?.toLowerCase() || ''
-      
+
       return (
         fullName.includes(lowercasedSearch) ||
         email.includes(lowercasedSearch) ||
@@ -204,7 +204,7 @@ const UserListTable = () => {
   if (error) {
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity="error">{error}</Alert>
+        <Alert severity='error'>{error}</Alert>
       </Box>
     )
   }
@@ -216,12 +216,12 @@ const UserListTable = () => {
         <Grid item xs={12} sm={6} md={4}>
           <TextField
             fullWidth
-            label="Search Users"
-            variant="outlined"
-            size="small"
+            label='Search Users'
+            variant='outlined'
+            size='small'
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by name, email, phone, etc."
+            onChange={e => setSearchTerm(e.target.value)}
+            placeholder='Search by name, email, phone, etc.'
             InputProps={{
               sx: { backgroundColor: 'background.paper' }
             }}
@@ -237,25 +237,26 @@ const UserListTable = () => {
               <TableRow>
                 <TableCell>User</TableCell>
                 <TableCell>Contact</TableCell>
-                <TableCell align="center">Language</TableCell>
-                <TableCell align="center">Activity</TableCell>
-                <TableCell align="center">Status</TableCell>
-                <TableCell align="center">Actions</TableCell>
+                <TableCell align='center'>Language</TableCell>
+                <TableCell align='center'>Proficiency Level</TableCell>
+                <TableCell align='center'>Activity</TableCell>
+                <TableCell align='center'>Status</TableCell>
+                <TableCell align='center'>Actions</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {paginatedUsers.length > 0 ? (
-                paginatedUsers.map((user) => (
+                paginatedUsers.map(user => (
                   <TableRow key={user.id} hover>
                     <TableCell>
-                      <Stack direction="row" alignItems="center" spacing={2}>
+                      <Stack direction='row' alignItems='center' spacing={2}>
                         <Avatar src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} />
                         <Box>
-                          <Typography fontWeight="medium">
+                          <Typography fontWeight='medium'>
                             {user.firstName} {user.lastName}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant='body2' color='text.secondary'>
                             {user.nativeLanguage} speaker
                           </Typography>
                         </Box>
@@ -263,48 +264,48 @@ const UserListTable = () => {
                     </TableCell>
                     <TableCell>
                       <Typography>{user.email || 'No email'}</Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant='body2' color='text.secondary'>
                         {user.phoneNumber}
                       </Typography>
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell>
+                      <Typography fontWeight='medium' align='center'>
+                        {user.nativeLanguage}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align='center'>
                       <Chip
                         label={user.proficiencyLevel}
                         color={
                           user.proficiencyLevel === ProficiencyLevel.BEGINNER
                             ? 'info'
                             : user.proficiencyLevel === ProficiencyLevel.INTERMEDIATE
-                            ? 'primary'
-                            : 'success'
+                              ? 'primary'
+                              : 'success'
                         }
                       />
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell align='center'>
                       <Box>
                         <Typography>XP: {user.xpPoints}</Typography>
                         <Typography>Streak: {user.streak} days</Typography>
-                        <Typography variant="body2">
-                          Last: {formatDate(user.lastLoginAt)}
-                        </Typography>
+                        <Typography variant='body2'>Last: {formatDate(user.lastLoginAt)}</Typography>
                       </Box>
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell align='center'>
                       <Chip
                         label={user.verified}
                         color={
                           user.verified === AppUserVerificationStatus.VERIFIED
                             ? 'success'
                             : user.verified === AppUserVerificationStatus.UNVERIFIED
-                            ? 'warning'
-                            : 'error'
+                              ? 'warning'
+                              : 'error'
                         }
                       />
                     </TableCell>
-                    <TableCell align="center">
-                      <IconButton
-                        aria-label="actions"
-                        onClick={(e) => handleMenuOpen(e, user)}
-                      >
+                    <TableCell align='center'>
+                      <IconButton aria-label='actions' onClick={e => handleMenuOpen(e, user)}>
                         <MoreVertIcon />
                       </IconButton>
                     </TableCell>
@@ -312,8 +313,8 @@ const UserListTable = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                    <Typography variant="body1">
+                  <TableCell colSpan={6} align='center' sx={{ py: 4 }}>
+                    <Typography variant='body1'>
                       {searchTerm ? 'No matching users found' : 'No users available'}
                     </Typography>
                   </TableCell>
@@ -324,12 +325,12 @@ const UserListTable = () => {
         </TableContainer>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
-          component="div"
+          component='div'
           count={filteredUsers.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={(_, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(e) => {
+          onRowsPerPageChange={e => {
             setRowsPerPage(parseInt(e.target.value, 10))
             setPage(0)
           }}
@@ -337,32 +338,24 @@ const UserListTable = () => {
       </Paper>
 
       {/* Context Menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={() => handleEdit(selectedUser?.id)}>Edit</MenuItem>
         <MenuItem onClick={handleDelete}>Delete</MenuItem>
       </Menu>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-      >
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to delete {selectedUser?.firstName}{' '}
-            {selectedUser?.lastName}?
+            Are you sure you want to delete {selectedUser?.firstName} {selectedUser?.lastName}?
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
           <Button
             onClick={confirmDelete}
-            color="error"
+            color='error'
             disabled={loading}
             startIcon={loading ? <CircularProgress size={20} /> : null}
           >
@@ -382,7 +375,7 @@ const UserListTable = () => {
           onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
           sx={{ width: '100%' }}
-          variant="filled"
+          variant='filled'
         >
           {snackbar.message}
         </Alert>
