@@ -2,6 +2,15 @@
 
 import { apiResponse, fetchData } from '@/utils/api'
 
+/**
+ * Get all courses with pagination and search
+ * @param {number} page - The page number to retrieve
+ * @param {number} limit - The number of items per page
+ * @param {string} [search] - The search query
+ * @param {string} [sortOrder=desc] - The sort order
+ * @param {string} [sortBy=createdAt] - The field to sort by
+ * @returns {Promise<{status: 'success', items: Course[]}|{status: 'error', message: string}>}
+ */
 export const getAllCourses = async (page, limit, search, sortOrder = 'desc', sortBy = 'createdAt') => {
   try {
     let url = `admin/courses?page=${page}&limit=${limit}&sort_order=${sortOrder}&sort_by=${sortBy}`
@@ -28,6 +37,11 @@ export const getAllCourses = async (page, limit, search, sortOrder = 'desc', sor
   }
 }
 
+/**
+ * get course details
+ * @param {*} id
+ * @returns
+ */
 export const getCourseDetails = async id => {
   try {
     const response = await fetchData(`admin/courses/${id}`, {
@@ -35,6 +49,27 @@ export const getCourseDetails = async id => {
     })
 
     return apiResponse(response)
+  } catch (error) {
+    return {
+      status: 'error',
+      message: error?.message
+    }
+  }
+}
+
+/**
+ * delete course
+ * @param {*} id
+ * @returns
+ */
+export const deleteCourse = async id => {
+  try {
+    const response = await fetchData(`admin/courses/${id}`, {
+      method: 'DELETE',
+      cache: 'no-store'
+    })
+
+    return apiResponse(response, '/course', 'path')
   } catch (error) {
     return {
       status: 'error',

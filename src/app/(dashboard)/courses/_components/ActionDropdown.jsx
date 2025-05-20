@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 import { Box, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from '@mui/material'
 
-const ActionDropdown = ({ id }) => {
+const ActionDropdown = ({ id, toggleDeleteModal }) => {
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
 
@@ -63,7 +63,7 @@ const ActionDropdown = ({ id }) => {
           </ListItemIcon>
           <ListItemText>Edit</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={e => toggleDeleteModal(e, id)}>
           <ListItemIcon>
             <i className='ri-delete-bin-7-line text-red-500'></i>
           </ListItemIcon>

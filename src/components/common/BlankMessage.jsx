@@ -6,11 +6,6 @@ const BlankMessage = ({
   isError = false,
   iconClass = 'ri-close-circle-fill',
   showBorder = true
-}: {
-  message?: string
-  isError?: boolean
-  iconClass?: string
-  showBorder?: boolean
 }) => {
   return (
     <Box

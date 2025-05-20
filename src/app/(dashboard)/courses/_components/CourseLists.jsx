@@ -1,15 +1,29 @@
 'use client'
 import { useCallback, useEffect, useMemo, useReducer } from 'react'
 
-import { Table, TableBody, TableContainer, TableHead, TablePagination } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Stack,
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  Typography
+} from '@mui/material'
 
 import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 
-import { getAllCourses } from '@/actions/course.server.action'
+import { deleteCourse, getAllCourses } from '@/actions/course.server.action'
 import CustomTableBody from '@/components/common/CustomTableBody'
 import CustomTableHeader from '@/components/common/CustomTableHeader'
+import Modal from '@/components/common/Modal'
 import { toCapitalize } from '@/utils/common'
+import dayjs from 'dayjs'
 import { debounce } from 'lodash'
+import Image from 'next/image'
+import { toast } from 'react-toastify'
 import ActionDropdown from './ActionDropdown'
 
 /**
@@ -18,6 +32,7 @@ import ActionDropdown from './ActionDropdown'
 const initialState = {
   openDelete: false,
   deleteLoading: false,
+  selectedDeleteId: null,
   search: '',
   page: 1,
   limit: 10,
@@ -25,7 +40,9 @@ const initialState = {
   totalCourses: 0,
   courses: [],
   isError: false,
-  error: null
+  error: null,
+  sortOrder: 'desc',
+  sortBy: 'createdAt'
 }
 
 /**
@@ -61,6 +78,12 @@ const reducer = (state, action) => {
       return { ...state, deleteLoading: !state?.deleteLoading }
     case 'SET_SEARCH':
       return { ...state, search: action.payload }
+    case 'SET_SORT':
+      return { ...state, sortBy: action.payload.sortBy, sortOrder: action.payload.sortOrder }
+    case 'SET_DELETE_LOADING':
+      return { ...state, deleteLoading: action.payload }
+    case 'SET_SELECTED_DELETE_ID':
+      return { ...state, selectedDeleteId: action.payload }
     default:
       return state
   }
@@ -69,7 +92,21 @@ const reducer = (state, action) => {
 const CourseLists = () => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const { page, limit, loading, totalCourses, courses, isError, search, error, sortOrder, sortBy } = state
+  const {
+    page,
+    limit,
+    loading,
+    totalCourses,
+    courses,
+    isError,
+    search,
+    error,
+    sortOrder,
+    sortBy,
+    selectedDeleteId,
+    openDelete,
+    deleteLoading
+  } = state
 
   /**
    * fetch courses function
@@ -114,11 +151,23 @@ const CourseLists = () => {
     () => [
       columnHelper.accessor('title', {
         header: 'Title',
-        cell: ({ row }) => row?.original?.title
+        cell: ({ row }) => (
+          <Stack direction='row' alignItems='center' spacing={2}>
+            <Avatar variant='rounded'>
+              <Image src={row?.original?.imagePath ?? ''} alt={row?.original?.title} width={50} height={50} />
+            </Avatar>
+            <Box component='div'>
+              <Typography variant='h6'>{row?.original?.title}</Typography>
+              <Typography variant='body2' color='text.secondary'>
+                {dayjs(row?.original?.createdAt).format('DD MMM, YYYY')}
+              </Typography>
+            </Box>
+          </Stack>
+        )
       }),
-      columnHelper.accessor('Total Days', {
-        header: 'Total Days',
-        cell: ({ row }) => row?.original?.totalDays,
+      columnHelper.accessor('difficulty', {
+        header: 'Difficulty',
+        cell: ({ row }) => toCapitalize(row?.original?.difficulty ?? ''),
         meta: {
           alignHeader: 'center'
         }
@@ -141,7 +190,7 @@ const CourseLists = () => {
         id: 'action',
         header: 'Action',
         enableSorting: false,
-        cell: ({ row }) => <ActionDropdown id={row?.original?.id} />,
+        cell: ({ row }) => <ActionDropdown id={row?.original?.id} toggleDeleteModal={toggleDeleteModal} />,
         meta: {
           alignHeader: 'center'
         }
@@ -199,6 +248,54 @@ const CourseLists = () => {
     dispatch({ type: 'SET_SORT', payload: { sortOrder: newSortOrder, sortBy: newSortBy } })
   }
 
+  /**
+   * handle delete action
+   * @param {*} event
+   */
+  const handleDelete = async e => {
+    e.preventDefault()
+    dispatch({ type: 'SET_DELETE_LOADING', payload: true })
+
+    try {
+      const response = await deleteCourse(selectedDeleteId)
+
+      if (response?.status === 'success') {
+        dispatch({ type: 'TOGGLE_DELETE' })
+        dispatch({ type: 'SET_SELECTED_DELETE_ID', payload: null })
+        fetchCourses()
+        toast.success(response?.message)
+      } else {
+        throw new Error(response?.message)
+      }
+    } catch (error) {
+      toast.error(error?.message || 'Something went wrong')
+    } finally {
+      dispatch({ type: 'SET_DELETE_LOADING', payload: false })
+    }
+  }
+
+  /**
+   * close delete modal
+   * @param {*} e
+   */
+  const closeDeleteModalHandler = e => {
+    e.preventDefault()
+    dispatch({ type: 'TOGGLE_DELETE' })
+    dispatch({ type: 'SET_SELECTED_DELETE_ID', payload: null })
+  }
+
+  /**
+   * toggle delete modal
+   * @param {*} e
+   * @param {*} id
+   */
+  const toggleDeleteModal = (e, id) => {
+    e.stopPropagation()
+    e.preventDefault()
+    dispatch({ type: 'TOGGLE_DELETE' })
+    dispatch({ type: 'SET_SELECTED_DELETE_ID', payload: id ?? null })
+  }
+
   return (
     <>
       <TableContainer>
@@ -228,6 +325,7 @@ const CourseLists = () => {
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleLimitChange}
       />
+      <Modal open={openDelete} setOpen={closeDeleteModalHandler} action={handleDelete} loading={deleteLoading} />
     </>
   )
 }

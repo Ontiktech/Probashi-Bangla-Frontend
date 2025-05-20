@@ -1,9 +1,9 @@
 'use client'
-import { createNewCourse } from '@/actions/course.client.action'
+import { updateCourse } from '@/actions/course.client.action'
 import Input from '@/components/common/form/Input'
 import Select from '@/components/common/form/Select'
 import SingleImageUploader from '@/components/common/form/SingleImageUploader'
-import { createCourseSchema, difficulties, languages } from '@/schema/course.schema'
+import { difficulties, languages, updateCourseSchema } from '@/schema/course.schema'
 import { populateValidationErrors, toCapitalize } from '@/utils/common'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Button, CircularProgress, Grid } from '@mui/material'
@@ -12,34 +12,38 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
-const CreateNewCourse = () => {
+const UpdateCourse = ({ course }) => {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  const defaultValues = {
+    title: course?.title,
+    description: course?.description,
+    language: course?.language,
+    targetLanguage: course?.targetLanguage,
+    difficulty: course?.difficulty,
+    estimatedHours: course?.estimatedHours,
+    imagePath: null
+  }
+
   const {
     control,
     formState: { errors },
     handleSubmit,
     watch,
-    setValue
+    setValue,
+    setError
   } = useForm({
-    defaultValues: {
-      title: '',
-      description: '',
-      language: '',
-      targetLanguage: '',
-      difficulty: '',
-      estimatedHours: 0,
-      imagePath: null
-    },
+    defaultValues,
     mode: 'onBlur',
-    resolver: yupResolver(createCourseSchema)
+    resolver: yupResolver(updateCourseSchema)
   })
 
   const onSubmit = async data => {
     setLoading(true)
 
     try {
-      const response = await createNewCourse(data)
+      const response = await updateCourse(data, course?.id)
 
       if (response?.status === 'validationError') {
         populateValidationErrors(response?.errors, setError)
@@ -69,6 +73,7 @@ const CreateNewCourse = () => {
             helperText={errors.imagePath?.message}
             defaultMessage='Only .jpg, .jpeg and .png files are allowed'
             disabled={loading}
+            defaultImage={course?.imagePath}
           />
         </Grid>
         <Grid item xs={12}>
@@ -164,11 +169,11 @@ const CreateNewCourse = () => {
             startIcon={loading ? <CircularProgress size={20} color='inherit' /> : <i className='ri-save-fill'></i>}
             disabled={loading}
           >
-            {loading ? 'Saving...' : 'Save'}
+            {loading ? 'Updating...' : 'Update'}
           </Button>
         </Grid>
       </Grid>
     </form>
   )
 }
-export default CreateNewCourse
+export default UpdateCourse

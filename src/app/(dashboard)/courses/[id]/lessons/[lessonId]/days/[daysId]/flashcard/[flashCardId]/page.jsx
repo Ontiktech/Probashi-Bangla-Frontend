@@ -15,7 +15,18 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 
-const FlashCardPage = ({ params: { id, lessonId, daysId, flashCardId } }) => {
+const FlashCardPage = async ({ params: { id, lessonId, daysId, flashCardId } }) => {
+  const response = await getFlashCardDetails(flashCardId)
+
+  if (response?.status === 'notFound') {
+    notFound()
+  } else if (response?.status === 'error') {
+    throw new Error(response?.message)
+  }
+
+  const {
+    data: { flash_card }
+  } = response
   return (
     <Card>
       <CardHeader

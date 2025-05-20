@@ -52,14 +52,26 @@ const CourseDetails = async ({ params: { id } }) => {
               component={Link}
               href={`/courses/${id}/lessons/create`}
               startIcon={<i className='ri-add-large-line'></i>}
+              size='small'
             >
               Create Lesson
+            </Button>
+            <Button
+              variant='contained'
+              component={Link}
+              href={`/courses/${id}/update`}
+              startIcon={<i className='ri-edit-box-fill'></i>}
+              color='error'
+              size='small'
+            >
+              Edit
             </Button>
             <Button
               variant='outlined'
               component={Link}
               href='/courses'
               startIcon={<i className='ri-arrow-left-line'></i>}
+              size='small'
             >
               Back
             </Button>

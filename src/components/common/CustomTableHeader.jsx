@@ -2,19 +2,11 @@ import { TableCell, TableRow } from '@mui/material'
 import { flexRender } from '@tanstack/react-table'
 import classNames from 'classnames'
 
-const CustomTableHeader = ({
-  table,
-  handleSort,
-  isSortable
-}: {
-  table: any
-  handleSort?: (column: any) => void
-  isSortable?: boolean
-}) => {
+const CustomTableHeader = ({ table, handleSort, isSortable }) => {
   return isSortable
-    ? table.getHeaderGroups().map((headerGroup: any) => (
+    ? table.getHeaderGroups().map(headerGroup => (
         <TableRow key={headerGroup.id}>
-          {headerGroup.headers.map((header: any) => (
+          {headerGroup.headers.map(header => (
             <TableCell key={header.id} align={header.column.columnDef.meta?.alignHeader || 'left'}>
               {header.isPlaceholder ? null : (
                 <div
@@ -37,9 +29,9 @@ const CustomTableHeader = ({
           ))}
         </TableRow>
       ))
-    : table.getHeaderGroups().map((headerGroup: any) => (
+    : table.getHeaderGroups().map(headerGroup => (
         <TableRow key={headerGroup.id}>
-          {headerGroup.headers.map((header: any) => (
+          {headerGroup.headers.map(header => (
             <TableCell key={header.id} align={header.column.columnDef.meta?.alignHeader || 'left'}>
               {flexRender(header.column.columnDef.header, header.getContext())}
             </TableCell>

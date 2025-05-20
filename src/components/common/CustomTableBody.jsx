@@ -3,26 +3,10 @@ import { TableCell, TableRow } from '@mui/material'
 
 import { flexRender } from '@tanstack/react-table'
 
-import TableLoader from './loader/TableLoader'
 import BlankMessage from './BlankMessage'
+import TableLoader from './loader/TableLoader'
 
-const CustomTableBody = ({
-  loading,
-  isError,
-  error,
-  data,
-  columns,
-  table,
-  noDataMessage = 'No data found!'
-}: {
-  loading: boolean
-  isError: boolean
-  error: string
-  data: never[]
-  columns: any
-  table: any
-  noDataMessage?: string
-}) => {
+const CustomTableBody = ({ loading, isError, error, data, columns, table, noDataMessage = 'No data found!' }) => {
   return loading ? (
     <TableRow>
       <TableCell colSpan={columns.length} align='center'>
@@ -42,9 +26,9 @@ const CustomTableBody = ({
       </TableCell>
     </TableRow>
   ) : (
-    table.getRowModel().rows.map((row: any) => (
+    table.getRowModel().rows.map(row => (
       <TableRow key={row.id}>
-        {row.getVisibleCells().map((cell: any) => (
+        {row.getVisibleCells().map(cell => (
           <TableCell key={cell.id} align={cell.column.columnDef.meta?.alignHeader || 'left'}>
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </TableCell>

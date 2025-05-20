@@ -1,23 +1,14 @@
 'use client'
 
 // MUI Imports
+import { CircularProgress } from '@mui/material'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 import { createPortal } from 'react-dom'
-import { CircularProgress } from '@mui/material'
-
-type ModalProps = {
-  open: boolean
-  setOpen: any
-  action: any
-  loading?: boolean
-  title?: string
-  description?: string
-}
 
 const Modal = ({
   open,
@@ -26,7 +17,7 @@ const Modal = ({
   loading = false,
   title = 'Are you sure to delete this data?',
   description = "By deleting you can't revert it for the next time. Please hold on and check before deleting this data."
-}: ModalProps) => {
+}) => {
   return open
     ? createPortal(
         <Dialog
