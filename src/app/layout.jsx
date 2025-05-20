@@ -10,8 +10,8 @@ import '@assets/iconify-icons/generated-icons.css'
 import { ToastContainer } from 'react-toastify'
 
 export const metadata = {
-  title: 'Materialize - Material Next.js Admin Template',
-  description: 'Materialize - Material Next.js Admin Template'
+  title: 'Probashi Kollan - A simple web app',
+  description: 'Probashi Kollan - A simple web app'
 }
 
 const RootLayout = ({ children }) => {

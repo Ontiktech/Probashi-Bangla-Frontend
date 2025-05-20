@@ -1,3 +1,4 @@
+import { getFlashCardDetails } from '@/actions/flashCard.server.action'
 import {
   Avatar,
   Button,
@@ -14,6 +15,7 @@ import {
 } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
 const FlashCardPage = async ({ params: { id, lessonId, daysId, flashCardId } }) => {
   const response = await getFlashCardDetails(flashCardId)
@@ -30,7 +32,7 @@ const FlashCardPage = async ({ params: { id, lessonId, daysId, flashCardId } }) 
   return (
     <Card>
       <CardHeader
-        title={<Typography variant='h6'>Flash Card 1</Typography>}
+        title={<Typography variant='h6'>{flash_card?.frontText}</Typography>}
         avatar={
           <Avatar>
             <i className='ri-add-circle-fill'></i>
@@ -57,47 +59,49 @@ const FlashCardPage = async ({ params: { id, lessonId, daysId, flashCardId } }) 
               <TableRow>
                 <TableCell>Image</TableCell>
                 <TableCell>
-                  <Image src='/images/avatars/1.png' width={100} height={100} alt='Flash Card' />
+                  <Image
+                    src={flash_card?.imageUrl ?? '/images/avatars/1.png'}
+                    width={100}
+                    height={100}
+                    alt='Flash Card'
+                  />
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Audio</TableCell>
-                <TableCell>audio.mp3</TableCell>
+                <TableCell>{flash_card?.audioUrl}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Front Text</TableCell>
-                <TableCell>Text 1</TableCell>
+                <TableCell>{flash_card?.frontText}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Front Subtext</TableCell>
-                <TableCell>Subtext 1</TableCell>
+                <TableCell>{flash_card?.frontSubtext}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Back Text</TableCell>
-                <TableCell>Back Text 1</TableCell>
+                <TableCell>{flash_card?.backText}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Back Subtext</TableCell>
-                <TableCell>Back subtext 1</TableCell>
+                <TableCell>{flash_card?.backSubtext}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Example</TableCell>
-                <TableCell>Example 1</TableCell>
+                <TableCell>{flash_card?.example}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Example Translation</TableCell>
-                <TableCell>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, eos.</TableCell>
+                <TableCell>{flash_card?.exampleTranslation}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Usage Notes</TableCell>
-                <TableCell>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique impedit, qui quod maxime eius
-                  obcaecati quibusdam quaerat neque non repellendus?
-                </TableCell>
+                <TableCell>{flash_card?.usageNotes}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Card Order</TableCell>
-                <TableCell>1</TableCell>
+                <TableCell>{flash_card?.cardOrder}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

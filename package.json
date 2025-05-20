@@ -10,7 +10,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "build:icons": "tsx src/assets/iconify-icons/bundle-icons-css.js",
+    "build:icons": "tsx src/assets/iconify-icons/bundle-icons-css.mjs",
     "postinstall": "npm run build:icons"
   },
   "dependencies": {
@@ -67,6 +67,5 @@
   },
   "overrides": {
     "rimraf": "^5.0.7"
-  },
-  "type": "module"
+  }
 }

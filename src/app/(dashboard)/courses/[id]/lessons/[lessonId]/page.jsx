@@ -1,3 +1,6 @@
+import { getLessonDetails } from '@/actions/lesson.server.action'
+import BlankMessage from '@/components/common/BlankMessage'
+import { toCapitalize } from '@/utils/common'
 import {
   Avatar,
   Button,
@@ -15,11 +18,22 @@ import {
 } from '@mui/material'
 import Link from 'next/link'
 
-const LessonDetailsPage = ({ params: { id, lessonId } }) => {
+const LessonDetailsPage = async ({ params: { id, lessonId } }) => {
+  const response = await getLessonDetails(lessonId)
+
+  if (response?.status === 'notFound') {
+    notFound()
+  } else if (response?.status === 'error') {
+    throw new Error(response?.message)
+  }
+
+  const {
+    data: { lesson }
+  } = response
   return (
     <Card>
       <CardHeader
-        title={<Typography variant='h6'>Lesson 1</Typography>}
+        title={<Typography variant='h6'>{lesson?.title}</Typography>}
         avatar={
           <Avatar>
             <i className='ri-add-circle-fill'></i>
@@ -53,27 +67,31 @@ const LessonDetailsPage = ({ params: { id, lessonId } }) => {
             <TableBody>
               <TableRow>
                 <TableCell>Title</TableCell>
-                <TableCell>Lesson 1</TableCell>
+                <TableCell>{lesson?.title}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Description</TableCell>
+                <TableCell>{lesson?.description}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Estimated Minutes</TableCell>
-                <TableCell>150</TableCell>
+                <TableCell>{lesson?.estimatedMinutes}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Difficulty</TableCell>
-                <TableCell>Beginner</TableCell>
+                <TableCell>{toCapitalize(lesson?.difficulty)}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Xp Reward</TableCell>
-                <TableCell>30</TableCell>
+                <TableCell>{lesson?.xpReward}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Lesson Order</TableCell>
-                <TableCell>1</TableCell>
+                <TableCell>{lesson?.lessonOrder}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>audioIntro</TableCell>
-                <TableCell>Demo Audio.mp3</TableCell>
+                <TableCell>Audio Intro</TableCell>
+                <TableCell>{lesson?.audioIntro}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -93,44 +111,35 @@ const LessonDetailsPage = ({ params: { id, lessonId } }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow>
-                <TableCell align='center'>2</TableCell>
-                <TableCell>Course Day 1</TableCell>
-                <TableCell align='center'>
-                  <Stack direction='row' spacing={1} alignItems='center' justifyContent='center'>
-                    <Button
-                      variant='contained'
-                      component={Link}
-                      href={`/courses/${id}/lessons/${lessonId}/days/1`}
-                      size='small'
-                    >
-                      <i className='ri-eye-fill'></i>
-                    </Button>
-                    <Button variant='contained' size='small' color='error'>
-                      <i class='ri-delete-bin-6-line'></i>
-                    </Button>
-                  </Stack>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell align='center'>5</TableCell>
-                <TableCell>Course Day 2</TableCell>
-                <TableCell align='center'>
-                  <Stack direction='row' spacing={1} alignItems='center' justifyContent='center'>
-                    <Button
-                      variant='contained'
-                      component={Link}
-                      href={`/courses/${id}/lessons/${lessonId}/days/2`}
-                      size='small'
-                    >
-                      <i className='ri-eye-fill'></i>
-                    </Button>
-                    <Button variant='contained' size='small' color='error'>
-                      <i class='ri-delete-bin-6-line'></i>
-                    </Button>
-                  </Stack>
-                </TableCell>
-              </TableRow>
+              {lesson?.days?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6}>
+                    <BlankMessage message='No days found.' />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                lesson?.days?.map(day => (
+                  <TableRow key={day?.id}>
+                    <TableCell align='center'>{day?.dayNumber}</TableCell>
+                    <TableCell>{day?.title}</TableCell>
+                    <TableCell align='center'>
+                      <Stack direction='row' spacing={1} alignItems='center' justifyContent='center'>
+                        <Button
+                          variant='contained'
+                          component={Link}
+                          href={`/courses/${id}/lessons/${lessonId}/days/${day?.id}`}
+                          size='small'
+                        >
+                          <i className='ri-eye-fill'></i>
+                        </Button>
+                        <Button variant='contained' size='small' color='error'>
+                          <i class='ri-delete-bin-6-line'></i>
+                        </Button>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>

@@ -82,7 +82,7 @@ const UserListTable = () => {
     }
 
     fetchUsers()
-  }, [])
+  }, []);
 
   // Enhanced search functionality
   const filteredUsers = useMemo(() => {

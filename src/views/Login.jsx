@@ -127,16 +127,16 @@ const LoginV2 = ({ mode }) => {
             src={characterIllustration}
             alt='character-illustration'
             className='max-bs-[673px] max-is-full bs-auto'
-            width={673}
-            height={500}
+            width={696}
+            height={673}
           />
         </div>
         <Image
           src={authBackground}
           className='absolute bottom-[4%] z-[-1] is-full max-md:hidden'
           alt='auth-background'
-          width={1000}
-          height={1000}
+          width={1920}
+          height={582}
         />
       </div>
       <div className='flex justify-center items-center bs-full bg-backgroundPaper !min-is-full p-6 md:!min-is-[unset] md:p-12 md:is-[480px]'>

@@ -11,15 +11,19 @@ const postFormData = async (endpoint, data, params, headers) => {
     })
 
     return {
-      message: response.data?.message || 'Success',
-      status: response.status,
-      data: response.data
+      status: response?.status,
+      data: response?.data,
+      message: response?.data?.data?.message
     }
   } catch (error) {
     return {
-      message: error?.response?.data?.message || 'An error occurred',
+      message:
+        error?.response?.data?.error?.message ||
+        error?.response?.data?.message ||
+        error?.message ||
+        'An error occurred',
       status: error?.response?.status || 500,
-      errors: error?.response?.data?.errors || null
+      errors: error?.response?.data?.error?.errors || null
     }
   }
 }
@@ -35,15 +39,19 @@ const patchFormData = async (endpoint, data, params, headers) => {
     })
 
     return {
-      message: response.data?.message || 'Success',
-      status: response.status,
-      data: response.data
+      status: response?.status,
+      data: response?.data,
+      message: response?.data?.data?.message
     }
   } catch (error) {
     return {
-      message: error?.response?.data?.message || 'An error occurred',
+      message:
+        error?.response?.data?.error?.message ||
+        error?.response?.data?.message ||
+        error?.message ||
+        'An error occurred',
       status: error?.response?.status || 500,
-      errors: error?.response?.data?.errors || null
+      errors: error?.response?.data?.error?.errors || null
     }
   }
 }

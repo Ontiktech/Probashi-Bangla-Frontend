@@ -18,6 +18,10 @@ const nextConfig = {
         hostname: 'localhost',
         port: '5000',
         pathname: '/uploads/**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'probashi-bangla-backend.onrender.com'
       }
     ]
   }

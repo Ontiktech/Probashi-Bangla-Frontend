@@ -2,7 +2,7 @@
 
 const API_URL = process.env.API_URL
 
-import { fetchData, apiResponse } from '../utils/api'
+import { apiResponse, fetchData } from '../utils/api'
 
 /**
  * Handles API responses consistently
@@ -26,7 +26,7 @@ import { fetchData, apiResponse } from '../utils/api'
  */
 export const createAppUser = async userData => {
   try {
-    const response = await fetchData(`${API_URL}/admin/app-users`, {
+    const response = await fetchData(`admin/app-users`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -60,9 +60,9 @@ export const createAppUser = async userData => {
 
 export const getAllAppUsers = async () => {
   try {
-    const response = await fetchData(`${API_URL}/admin/app-users`)
+    const response = await fetchData(`admin/app-users`)
 
-    if (response?.status !== 200) {
+    if (response?.statusCode !== 200) {
       throw new Error(response.data?.message || 'Failed to fetch users')
     }
 
@@ -76,7 +76,7 @@ export const getAllAppUsers = async () => {
  */
 export const getAppUserById = async userId => {
   try {
-    const response = await fetchData(`${API_URL}/admin/app-users/${userId}`, {
+    const response = await fetchData(`admin/app-users/${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -95,7 +95,7 @@ export const getAppUserById = async userId => {
  */
 export const updateAppUser = async (data, id) => {
   try {
-    const response = await fetchData(`${API_URL}/admin/app-users/${id}`, {
+    const response = await fetchData(`admin/app-users/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
@@ -115,14 +115,14 @@ export const updateAppUser = async (data, id) => {
  */
 export const deleteAppUser = async userId => {
   try {
-    const response = await fetchData(`${API_URL}/admin/app-users/${userId}`, {
+    const response = await fetchData(`admin/app-users/${userId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       },
       cache: 'no-store'
     })
-    return apiResponse(response);
+    return apiResponse(response)
   } catch (error) {
     return {
       success: false,

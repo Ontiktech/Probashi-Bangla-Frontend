@@ -1,14 +1,26 @@
+import { getCourseDetails } from '@/actions/course.server.action'
 import { Avatar, Button, Card, CardContent, CardHeader, Chip, Stack, Typography } from '@mui/material'
 import Link from 'next/link'
 import CreateLesson from './_components/CreateLesson'
 
-const CreateLessonPage = ({ params: { id, dayId } }) => {
+const CreateLessonPage = async ({ params: { id } }) => {
+  const response = await getCourseDetails(id)
+
+  if (response?.status === 'notFound') {
+    notFound()
+  } else if (response?.status === 'error') {
+    throw new Error(response?.message)
+  }
+
+  const {
+    data: { course }
+  } = response
   return (
     <Card>
       <CardHeader
         title={
           <Stack direction='row' spacing={1} alignItems='center'>
-            <Typography variant='h6'>Create Lesson for Course 1</Typography>
+            <Typography variant='h6'>Create Lesson for {course?.title}</Typography>
             <Chip label='New' size='small' color='primary' />
           </Stack>
         }
@@ -30,7 +42,7 @@ const CreateLessonPage = ({ params: { id, dayId } }) => {
         }
       />
       <CardContent>
-        <CreateLesson />
+        <CreateLesson courseId={id} />
       </CardContent>
     </Card>
   )

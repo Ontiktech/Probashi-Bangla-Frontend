@@ -1,4 +1,5 @@
 import { getCourseDetails } from '@/actions/course.server.action'
+import BlankMessage from '@/components/common/BlankMessage'
 import { toCapitalize } from '@/utils/common'
 import {
   Avatar,
@@ -16,6 +17,7 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
+import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -32,8 +34,6 @@ const CourseDetails = async ({ params: { id } }) => {
   const {
     data: { course }
   } = response
-
-  console.log({ course })
 
   return (
     <Card>
@@ -123,7 +123,7 @@ const CourseDetails = async ({ params: { id } }) => {
               </TableRow>
               <TableRow>
                 <TableCell>Created AT</TableCell>
-                <TableCell>{course?.createdAt}</TableCell>
+                <TableCell>{dayjs(course?.createdAt).format('DD MMM, YYYY')}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -137,32 +137,47 @@ const CourseDetails = async ({ params: { id } }) => {
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>Title</TableCell>
                 <TableCell align='center'>Estimated Minutes</TableCell>
                 <TableCell>Difficulty</TableCell>
                 <TableCell align='center'>Xp Reward</TableCell>
                 <TableCell align='center'>Lesson Order</TableCell>
-                <TableCell align='center'>Audio Intro</TableCell>
                 <TableCell align='center'>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow>
-                <TableCell align='center'>10</TableCell>
-                <TableCell>Easy</TableCell>
-                <TableCell align='center'>5</TableCell>
-                <TableCell align='center'>1</TableCell>
-                <TableCell align='center'>Yes</TableCell>
-                <TableCell align='center'>
-                  <Stack direction='row' spacing={1} alignItems='center' justifyContent='center'>
-                    <Button variant='contained' component={Link} href={`/courses/${id}/lessons/1`} size='small'>
-                      <i className='ri-eye-fill'></i>
-                    </Button>
-                    <Button variant='contained' size='small' color='error'>
-                      <i class='ri-delete-bin-6-line'></i>
-                    </Button>
-                  </Stack>
-                </TableCell>
-              </TableRow>
+              {course?.lessons?.length == 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6}>
+                    <BlankMessage message='No lessons found.' />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                course?.lessons?.map(lesson => (
+                  <TableRow key={lesson?.id}>
+                    <TableCell>{lesson?.title}</TableCell>
+                    <TableCell align='center'>{lesson?.estimatedMinutes}</TableCell>
+                    <TableCell>{toCapitalize(lesson?.difficulty)}</TableCell>
+                    <TableCell align='center'>{lesson?.xpReward}</TableCell>
+                    <TableCell align='center'>{lesson?.lessonOrder}</TableCell>
+                    <TableCell align='center'>
+                      <Stack direction='row' spacing={1} alignItems='center' justifyContent='center'>
+                        <Button
+                          variant='contained'
+                          component={Link}
+                          href={`/courses/${id}/lessons/${lesson?.id}`}
+                          size='small'
+                        >
+                          <i className='ri-eye-fill'></i>
+                        </Button>
+                        <Button variant='contained' size='small' color='error'>
+                          <i class='ri-delete-bin-6-line'></i>
+                        </Button>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>
