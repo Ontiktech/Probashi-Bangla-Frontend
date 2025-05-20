@@ -79,7 +79,7 @@ export const apiResponse = async (response, str = null, type = 'tag') => {
     return {
       ...response,
       status: 'success',
-      message: response?.message
+      message: response?.message || response?.data?.message || 'Success'
     }
   } else if (response?.statusCode === 422) {
     return { status: 'validationError', errors: response?.errors }

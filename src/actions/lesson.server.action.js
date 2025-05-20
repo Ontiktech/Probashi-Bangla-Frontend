@@ -15,3 +15,19 @@ export const getLessonDetails = async id => {
     }
   }
 }
+
+export const deleteLesson = async (id, courseId) => {
+  try {
+    const response = await fetchData(`admin/lessons/${id}`, {
+      method: 'DELETE',
+      cache: 'no-store'
+    })
+
+    return apiResponse(response, `/courses/${courseId}`, 'path')
+  } catch (error) {
+    return {
+      status: 'error',
+      message: error?.message
+    }
+  }
+}

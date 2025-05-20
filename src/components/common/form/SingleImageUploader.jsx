@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Controller } from 'react-hook-form'
+const imageFormats = ['jpg', 'jpeg', 'png', 'gif', 'jpeg']
 
 const SingleImageUploader = ({
   name,
@@ -91,6 +92,50 @@ const SingleImageUploader = ({
     }
   })
 
+  const defaultImageExt = defaultImage ? defaultImage?.split('.').pop() : null
+  const defaultImageName = defaultImage ? defaultImage?.split('/').pop() : null
+
+  const isDefaultImage = defaultImage ? imageFormats.includes(defaultImageExt) : false
+
+  let fileContent = null
+
+  if (!invalidFileInfo && defaultImage && !isDefaultImage) {
+    fileContent = (
+      <Stack
+        direction='row'
+        spacing={2}
+        alignItems='center'
+        sx={{ mt: 2 }}
+        className='border border-gray-200 px-3 py-2 rounded-md'
+      >
+        <Avatar>
+          <i className='ri-folder-music-line'></i>
+        </Avatar>
+        <Box component='div'>
+          <Typography variant='h6'>{defaultImageName}</Typography>
+        </Box>
+      </Stack>
+    )
+  } else if (invalidFileInfo) {
+    fileContent = (
+      <Stack
+        direction='row'
+        spacing={2}
+        alignItems='center'
+        sx={{ mt: 2 }}
+        className='border border-gray-200 px-3 py-2 rounded-md'
+      >
+        <Avatar>
+          <i className='ri-folder-music-line'></i>
+        </Avatar>
+        <Box component='div'>
+          <Typography variant='h6'>{invalidFileInfo?.name}</Typography>
+          <Typography variant='body2'>{invalidFileInfo?.size}</Typography>
+        </Box>
+      </Stack>
+    )
+  }
+
   return (
     <Box component='div'>
       <Controller
@@ -155,23 +200,7 @@ const SingleImageUploader = ({
       </Typography>
 
       {/* Show file info if not image */}
-      {invalidFileInfo && (
-        <Stack
-          direction='row'
-          spacing={2}
-          alignItems='center'
-          sx={{ mt: 2 }}
-          className='border border-gray-200 px-3 py-2 rounded-md'
-        >
-          <Avatar>
-            <i class='ri-folder-music-line'></i>
-          </Avatar>
-          <Box component='div'>
-            <Typography variant='h6'>{invalidFileInfo?.name}</Typography>
-            <Typography variant='body2'>{invalidFileInfo?.size}</Typography>
-          </Box>
-        </Stack>
-      )}
+      {fileContent}
     </Box>
   )
 }

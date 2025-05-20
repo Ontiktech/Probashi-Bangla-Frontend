@@ -1,8 +1,8 @@
 import { getCourseDetails } from '@/actions/course.server.action'
-import BlankMessage from '@/components/common/BlankMessage'
 import { toCapitalize } from '@/utils/common'
 import {
   Avatar,
+  Box,
   Button,
   Card,
   CardContent,
@@ -13,7 +13,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   Typography
 } from '@mui/material'
@@ -21,6 +20,7 @@ import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import LessonLists from './_components/LessonLists'
 
 const CourseDetails = async ({ params: { id } }) => {
   const response = await getCourseDetails(id)
@@ -79,17 +79,18 @@ const CourseDetails = async ({ params: { id } }) => {
         }
       />
       <CardContent>
+        <Box component='div' className='aspect-video' sx={{ mb: 5 }}>
+          <Image
+            src={course?.imagePath || '/images/blank/no-image.png'}
+            alt='avatar'
+            width={1000}
+            height={700}
+            className='w-full h-full object-cover'
+          />
+        </Box>
         <TableContainer>
           <Table>
             <TableBody>
-              <TableRow>
-                <TableCell>Image</TableCell>
-                <TableCell>
-                  <Avatar variant='rounded'>
-                    <Image src={course?.imagePath || '/images/avatars/1.png'} alt='avatar' width={50} height={50} />
-                  </Avatar>
-                </TableCell>
-              </TableRow>
               <TableRow>
                 <TableCell>Title</TableCell>
                 <TableCell>{course?.title}</TableCell>
@@ -129,58 +130,7 @@ const CourseDetails = async ({ params: { id } }) => {
           </Table>
         </TableContainer>
 
-        <Typography variant='h6' sx={{ mt: 6 }}>
-          Course Lessons
-        </Typography>
-
-        <TableContainer component={Card} sx={{ mt: 3 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Title</TableCell>
-                <TableCell align='center'>Estimated Minutes</TableCell>
-                <TableCell>Difficulty</TableCell>
-                <TableCell align='center'>Xp Reward</TableCell>
-                <TableCell align='center'>Lesson Order</TableCell>
-                <TableCell align='center'>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {course?.lessons?.length == 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6}>
-                    <BlankMessage message='No lessons found.' />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                course?.lessons?.map(lesson => (
-                  <TableRow key={lesson?.id}>
-                    <TableCell>{lesson?.title}</TableCell>
-                    <TableCell align='center'>{lesson?.estimatedMinutes}</TableCell>
-                    <TableCell>{toCapitalize(lesson?.difficulty)}</TableCell>
-                    <TableCell align='center'>{lesson?.xpReward}</TableCell>
-                    <TableCell align='center'>{lesson?.lessonOrder}</TableCell>
-                    <TableCell align='center'>
-                      <Stack direction='row' spacing={1} alignItems='center' justifyContent='center'>
-                        <Button
-                          variant='contained'
-                          component={Link}
-                          href={`/courses/${id}/lessons/${lesson?.id}`}
-                          size='small'
-                        >
-                          <i className='ri-eye-fill'></i>
-                        </Button>
-                        <Button variant='contained' size='small' color='error'>
-                          <i class='ri-delete-bin-6-line'></i>
-                        </Button>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <LessonLists lessons={course?.lessons} courseId={id} />
       </CardContent>
     </Card>
   )

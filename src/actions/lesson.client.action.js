@@ -17,3 +17,23 @@ export const createNewLesson = async data => {
     'path'
   )
 }
+
+export const updateLesson = async (data, id) => {
+  const session = await getSession()
+
+  const response = await clientApi.patchFormData(
+    `admin/lessons/${id}`,
+    { id, ...data },
+    {},
+    { Authorization: `${session?.token}` }
+  )
+
+  return apiResponse(
+    {
+      ...response,
+      statusCode: response?.status
+    },
+    `/courses/${data?.id}`,
+    'path'
+  )
+}

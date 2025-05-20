@@ -133,7 +133,7 @@ const LessonDetailsPage = async ({ params: { id, lessonId } }) => {
                           <i className='ri-eye-fill'></i>
                         </Button>
                         <Button variant='contained' size='small' color='error'>
-                          <i class='ri-delete-bin-6-line'></i>
+                          <i className='ri-delete-bin-6-line'></i>
                         </Button>
                       </Stack>
                     </TableCell>
