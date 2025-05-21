@@ -21,6 +21,7 @@ import Typography from '@mui/material/Typography'
 import { signOut, useSession } from 'next-auth/react'
 
 import { useSettings } from '@core/hooks/useSettings'
+import { useRouter } from 'next-nprogress-bar'
 import Link from 'next/link'
 
 // Styled component for badge content
