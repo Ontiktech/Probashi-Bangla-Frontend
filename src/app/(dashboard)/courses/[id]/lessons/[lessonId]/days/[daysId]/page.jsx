@@ -1,5 +1,4 @@
 import { getDayDetails } from '@/actions/day.server.action'
-import BlankMessage from '@/components/common/BlankMessage'
 import {
   Avatar,
   Button,
@@ -11,11 +10,11 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   Typography
 } from '@mui/material'
 import Link from 'next/link'
+import FlashCardList from './_components/FlashCardList'
 
 const DaysPage = async ({ params: { id, lessonId, daysId } }) => {
   const response = await getDayDetails(daysId)
@@ -29,6 +28,7 @@ const DaysPage = async ({ params: { id, lessonId, daysId } }) => {
   const {
     data: { day }
   } = response
+
   return (
     <Card>
       <CardHeader
@@ -80,56 +80,7 @@ const DaysPage = async ({ params: { id, lessonId, daysId } }) => {
           </Table>
         </TableContainer>
 
-        <Typography variant='h6' sx={{ mt: 6 }}>
-          Course Flash Cards
-        </Typography>
-
-        <TableContainer component={Card} sx={{ mt: 3 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Front Text</TableCell>
-                <TableCell>Front Subtext</TableCell>
-                <TableCell>Back Text</TableCell>
-                <TableCell>Back Subtext</TableCell>
-                <TableCell align='center'>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {day?.flash_cards?.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6}>
-                    <BlankMessage message='No flash cards found.' />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                day?.flash_cards?.map(flashCard => (
-                  <TableRow key={flashCard?.id}>
-                    <TableCell>{flashCard?.frontText}</TableCell>
-                    <TableCell>{flashCard?.frontSubtext}</TableCell>
-                    <TableCell>{flashCard?.backText}</TableCell>
-                    <TableCell>{flashCard?.backSubtext}</TableCell>
-                    <TableCell align='center'>
-                      <Stack direction='row' spacing={1} alignItems='center' justifyContent='center'>
-                        <Button
-                          variant='contained'
-                          component={Link}
-                          href={`/courses/${id}/lessons/${lessonId}/days/${daysId}/flashcard/${flashCard?.id}`}
-                          size='small'
-                        >
-                          <i className='ri-eye-fill'></i>
-                        </Button>
-                        <Button variant='contained' size='small' color='error'>
-                          <i className='ri-delete-bin-6-line'></i>
-                        </Button>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <FlashCardList dayId={daysId} courseId={id} lessonId={lessonId} flashCards={day?.flash_cards} />
       </CardContent>
     </Card>
   )

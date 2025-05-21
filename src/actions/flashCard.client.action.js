@@ -18,3 +18,23 @@ export const createNewFlashCard = async data => {
     'path'
   )
 }
+
+export const updateFlashCard = async data => {
+  const session = await getSession()
+
+  const response = await clientApi.patchFormData(
+    `admin/flash-cards/${data?.id}`,
+    data,
+    {},
+    { Authorization: `${session?.token}` }
+  )
+
+  return apiResponse(
+    {
+      ...response,
+      statusCode: response?.status
+    },
+    `/courses/${data?.id}/lesson/${data?.lessonId}/days/${data?.dayId}`,
+    'path'
+  )
+}
