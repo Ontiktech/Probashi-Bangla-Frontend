@@ -38,3 +38,38 @@ export const getDayDetails = async id => {
     }
   }
 }
+
+export const deleteDay = async (id, courseId, lessonId) => {
+  try {
+    const response = await fetchData(`admin/days/${id}`, {
+      method: 'DELETE',
+      cache: 'no-store'
+    })
+
+    return apiResponse(response, `/courses/${courseId}/lesson/${lessonId}`, 'path')
+  } catch (error) {
+    return {
+      status: 'error',
+      message: error?.message
+    }
+  }
+}
+
+export const updateDay = async (data, lessonId, courseId) => {
+  try {
+    const response = await fetchData(`admin/days/${data?.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+      cache: 'no-store'
+    })
+
+    console.log({ response })
+
+    return apiResponse(response, `/courses/${courseId}/lesson/${lessonId}/days/${data?.id}`, 'path')
+  } catch (error) {
+    return {
+      status: 'error',
+      message: error?.message
+    }
+  }
+}

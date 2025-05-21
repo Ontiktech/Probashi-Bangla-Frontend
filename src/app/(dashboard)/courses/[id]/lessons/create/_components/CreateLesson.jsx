@@ -26,6 +26,7 @@ const CreateLesson = ({ courseId }) => {
   } = useForm({
     defaultValues: {
       title: '',
+      description: '',
       estimatedMinutes: 0,
       difficulty: '',
       lessonOrder: 0,
@@ -83,6 +84,18 @@ const CreateLesson = ({ courseId }) => {
             error={!!errors.title}
             helperText={errors.title?.message}
             disabled={loading}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Input
+            label='Description'
+            control={control}
+            name='description'
+            error={!!errors.description}
+            helperText={errors.description?.message}
+            disabled={loading}
+            multiline
             fullWidth
           />
         </Grid>

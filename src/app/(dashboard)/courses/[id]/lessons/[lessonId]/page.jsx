@@ -1,5 +1,4 @@
 import { getLessonDetails } from '@/actions/lesson.server.action'
-import BlankMessage from '@/components/common/BlankMessage'
 import { toCapitalize } from '@/utils/common'
 import {
   Avatar,
@@ -12,11 +11,11 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   Typography
 } from '@mui/material'
 import Link from 'next/link'
+import DayList from './_components/DayList'
 
 const LessonDetailsPage = async ({ params: { id, lessonId } }) => {
   const response = await getLessonDetails(lessonId)
@@ -30,6 +29,9 @@ const LessonDetailsPage = async ({ params: { id, lessonId } }) => {
   const {
     data: { lesson }
   } = response
+
+  console.log(lesson)
+
   return (
     <Card>
       <CardHeader
@@ -97,52 +99,7 @@ const LessonDetailsPage = async ({ params: { id, lessonId } }) => {
           </Table>
         </TableContainer>
 
-        <Typography variant='h6' sx={{ mt: 6 }}>
-          Course Days
-        </Typography>
-
-        <TableContainer component={Card} sx={{ mt: 3 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell align='center'>Day</TableCell>
-                <TableCell>Title</TableCell>
-                <TableCell align='center'>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {lesson?.days?.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6}>
-                    <BlankMessage message='No days found.' />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                lesson?.days?.map(day => (
-                  <TableRow key={day?.id}>
-                    <TableCell align='center'>{day?.dayNumber}</TableCell>
-                    <TableCell>{day?.title}</TableCell>
-                    <TableCell align='center'>
-                      <Stack direction='row' spacing={1} alignItems='center' justifyContent='center'>
-                        <Button
-                          variant='contained'
-                          component={Link}
-                          href={`/courses/${id}/lessons/${lessonId}/days/${day?.id}`}
-                          size='small'
-                        >
-                          <i className='ri-eye-fill'></i>
-                        </Button>
-                        <Button variant='contained' size='small' color='error'>
-                          <i className='ri-delete-bin-6-line'></i>
-                        </Button>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <DayList days={lesson?.days} courseId={id} lessonId={lessonId} />
       </CardContent>
     </Card>
   )

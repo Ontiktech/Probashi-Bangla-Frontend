@@ -82,10 +82,10 @@ export const apiResponse = async (response, str = null, type = 'tag') => {
       message: response?.message || response?.data?.message || 'Success'
     }
   } else if (response?.statusCode === 422) {
-    return { status: 'validationError', errors: response?.errors }
+    return { status: 'validationError', errors: response?.errors || response?.error?.errors }
   } else if (response?.statusCode === 404) {
-    return { status: 'notFound', message: response?.message }
+    return { status: 'notFound', message: response?.message || response?.error?.message }
   } else {
-    return { status: 'error', message: response?.message }
+    return { status: 'error', message: response?.message || response?.error?.message }
   }
 }

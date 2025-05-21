@@ -6,6 +6,7 @@ const IMAGE_MAX_SIZE = 5 * 1024 * 1024
 
 const baseSchema = {
   title: yup.string().required('Please enter a title!').max(255, 'Title must be less than 255 characters!'),
+  description: yup.string().nullable().max(5000, 'Description must be less than 5000 characters!'),
   estimatedMinutes: yup
     .number()
     .required('Please enter a estimated minutes!')

@@ -26,6 +26,7 @@ const UpdateLesson = ({ lesson, courseId, lessonId }) => {
   } = useForm({
     defaultValues: {
       title: lesson?.title,
+      description: lesson?.description,
       estimatedMinutes: lesson?.estimatedMinutes,
       difficulty: lesson?.difficulty,
       lessonOrder: lesson?.lessonOrder,
@@ -85,6 +86,18 @@ const UpdateLesson = ({ lesson, courseId, lessonId }) => {
             error={!!errors.title}
             helperText={errors.title?.message}
             disabled={loading}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Input
+            label='Description'
+            control={control}
+            name='description'
+            error={!!errors.description}
+            helperText={errors.description?.message}
+            disabled={loading}
+            multiline
             fullWidth
           />
         </Grid>

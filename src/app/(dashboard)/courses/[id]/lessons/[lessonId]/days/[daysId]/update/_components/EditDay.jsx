@@ -1,5 +1,5 @@
 'use client'
-import { createNewDay } from '@/actions/day.server.action'
+import { updateDay } from '@/actions/day.server.action'
 import Input from '@/components/common/form/Input'
 import { daySchema } from '@/schema/days.schema'
 import { populateValidationErrors } from '@/utils/common'
@@ -10,20 +10,23 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
-const CreateDays = ({ courseId, lessonId }) => {
+const EditDay = ({ day, courseId, lessonId, dayId }) => {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  const defaultValues = {
+    dayNumber: day?.dayNumber,
+    title: day?.title,
+    description: day?.description
+  }
+
   const {
     control,
     formState: { errors },
     handleSubmit,
     setError
   } = useForm({
-    defaultValues: {
-      dayNumber: 0,
-      title: '',
-      description: ''
-    },
+    defaultValues,
     mode: 'onBlur',
     resolver: yupResolver(daySchema)
   })
@@ -32,9 +35,7 @@ const CreateDays = ({ courseId, lessonId }) => {
     setLoading(true)
 
     try {
-      const response = await createNewDay({ lessonId, ...data })
-
-      console.log({ response })
+      const response = await updateDay({ id: dayId, ...data }, lessonId, courseId)
 
       if (response?.status === 'validationError') {
         populateValidationErrors(response?.errors, setError)
@@ -97,11 +98,11 @@ const CreateDays = ({ courseId, lessonId }) => {
             startIcon={loading ? <CircularProgress size={20} color='inherit' /> : <i className='ri-save-fill'></i>}
             disabled={loading}
           >
-            {loading ? 'Saving...' : 'Save'}
+            {loading ? 'Updating...' : 'Update'}
           </Button>
         </Grid>
       </Grid>
     </form>
   )
 }
-export default CreateDays
+export default EditDay
