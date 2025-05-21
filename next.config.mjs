@@ -26,6 +26,10 @@ const nextConfig = {
       {
         protocol: 'http',
         hostname: 'www.w3.org'
+      },
+      {
+        protocol: 'https',
+        hostname: 'flounder-quick-basically.ngrok-free.app'
       }
     ]
   }
