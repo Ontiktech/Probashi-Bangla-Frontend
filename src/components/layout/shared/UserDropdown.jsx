@@ -18,7 +18,7 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
 // Hook Imports
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 import { useSettings } from '@core/hooks/useSettings'
 import { useRouter } from 'next-nprogress-bar'
@@ -36,6 +36,7 @@ const BadgeContentSpan = styled('span')({
 const UserDropdown = () => {
   // States
   const [open, setOpen] = useState(false)
+  const { data: session } = useSession()
 
   // Refs
   const anchorRef = useRef(null)
@@ -110,9 +111,9 @@ const UserDropdown = () => {
                     <Avatar alt='John Doe' src='/images/avatars/1.png' />
                     <div className='flex items-start flex-col'>
                       <Typography variant='body2' className='font-medium' color='text.primary'>
-                        John Doe
+                        {session?.user?.firstName} {session?.user?.lastName}
                       </Typography>
-                      <Typography variant='caption'>admin@materialize.com</Typography>
+                      <Typography variant='caption'>{session?.user?.email}</Typography>
                     </div>
                   </div>
                   <Divider className='mlb-1' />
