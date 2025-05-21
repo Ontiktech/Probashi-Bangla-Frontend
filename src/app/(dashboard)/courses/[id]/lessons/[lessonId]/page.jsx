@@ -30,8 +30,6 @@ const LessonDetailsPage = async ({ params: { id, lessonId } }) => {
     data: { lesson }
   } = response
 
-  console.log(lesson)
-
   return (
     <Card>
       <CardHeader

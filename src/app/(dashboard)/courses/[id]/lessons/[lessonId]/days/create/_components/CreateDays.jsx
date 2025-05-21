@@ -34,8 +34,6 @@ const CreateDays = ({ courseId, lessonId }) => {
     try {
       const response = await createNewDay({ lessonId, ...data })
 
-      console.log({ response })
-
       if (response?.status === 'validationError') {
         populateValidationErrors(response?.errors, setError)
       } else if (response?.status === 'success') {

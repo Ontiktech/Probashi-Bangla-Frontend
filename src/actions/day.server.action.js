@@ -63,8 +63,6 @@ export const updateDay = async (data, lessonId, courseId) => {
       cache: 'no-store'
     })
 
-    console.log({ response })
-
     return apiResponse(response, `/courses/${courseId}/lesson/${lessonId}/days/${data?.id}`, 'path')
   } catch (error) {
     return {
