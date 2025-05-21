@@ -5,11 +5,10 @@ import { useState } from 'react'
 
 // Next Imports
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 // MUI Imports
 import Checkbox from '@mui/material/Checkbox'
-import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -34,6 +33,7 @@ import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 import { LoadingButton } from '@mui/lab'
 import { CircularProgress, FormControl } from '@mui/material'
+import { useRouter } from 'next-nprogress-bar'
 import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
@@ -127,16 +127,16 @@ const LoginV2 = ({ mode }) => {
             src={characterIllustration}
             alt='character-illustration'
             className='max-bs-[673px] max-is-full bs-auto'
-            width={673}
-            height={500}
+            width={696}
+            height={673}
           />
         </div>
         <Image
           src={authBackground}
           className='absolute bottom-[4%] z-[-1] is-full max-md:hidden'
           alt='auth-background'
-          width={1000}
-          height={1000}
+          width={1920}
+          height={582}
         />
       </div>
       <div className='flex justify-center items-center bs-full bg-backgroundPaper !min-is-full p-6 md:!min-is-[unset] md:p-12 md:is-[480px]'>
@@ -186,9 +186,6 @@ const LoginV2 = ({ mode }) => {
 
             <div className='flex justify-between items-center flex-wrap gap-x-3 gap-y-1'>
               <FormControlLabel control={<Checkbox />} label='Remember me' />
-              <Typography className='text-end' color='primary' component={Link} href='/forgot-password'>
-                Forgot password?
-              </Typography>
             </div>
             <LoadingButton
               loading={loading}
@@ -206,13 +203,13 @@ const LoginV2 = ({ mode }) => {
             >
               Log In
             </LoadingButton>
-            <div className='flex justify-center items-center flex-wrap gap-2'>
+            {/* <div className='flex justify-center items-center flex-wrap gap-2'>
               <Typography>New on our platform?</Typography>
               <Typography component={Link} color='primary'>
                 Create an account
               </Typography>
-            </div>
-            <Divider className='gap-3 text-textPrimary'>or</Divider>
+            </div> */}
+            {/* <Divider className='gap-3 text-textPrimary'>or</Divider>
             <div className='flex justify-center items-center gap-2'>
               <IconButton size='small' className='text-facebook'>
                 <i className='ri-facebook-fill' />
@@ -226,7 +223,7 @@ const LoginV2 = ({ mode }) => {
               <IconButton size='small' className='text-googlePlus'>
                 <i className='ri-google-fill' />
               </IconButton>
-            </div>
+            </div> */}
           </form>
         </div>
       </div>

@@ -19,12 +19,7 @@ export const authOptions = {
             },
             body: JSON.stringify({ email, password })
           })
-
-          if (res.status === 401) {
-            throw new Error(JSON.stringify(data))
-          } else if (res.status === 400) {
-            throw new Error(JSON.stringify(data))
-          }
+          const data = await res.json()
 
           if (res.status === 200) {
             /*
@@ -32,12 +27,13 @@ export const authOptions = {
              * user data below. Below return statement will set the user object in the token and the same is set in
              * the session which will be accessible all over the app.
              */
-            const data = await res.json()
 
             return {
               user: data?.data?.user,
               token: data?.data?.jwt
             }
+          } else {
+            throw new Error(JSON.stringify(data?.error))
           }
 
           return null

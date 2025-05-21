@@ -3,9 +3,6 @@
 // React Imports
 import { useRef, useState } from 'react'
 
-// Next Imports
-import { useRouter } from 'next/navigation'
-
 // MUI Imports
 import Avatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
@@ -21,7 +18,7 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
 // Hook Imports
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 import { useSettings } from '@core/hooks/useSettings'
 import Link from 'next/link'
@@ -39,6 +36,7 @@ const BadgeContentSpan = styled('span')({
 const UserDropdown = () => {
   // States
   const [open, setOpen] = useState(false)
+  const { data: session } = useSession()
 
   // Refs
   const anchorRef = useRef(null)
@@ -113,27 +111,15 @@ const UserDropdown = () => {
                     <Avatar alt='John Doe' src='/images/avatars/1.png' />
                     <div className='flex items-start flex-col'>
                       <Typography variant='body2' className='font-medium' color='text.primary'>
-                        John Doe
+                        {session?.user?.firstName} {session?.user?.lastName}
                       </Typography>
-                      <Typography variant='caption'>admin@materialize.com</Typography>
+                      <Typography variant='caption'>{session?.user?.email}</Typography>
                     </div>
                   </div>
                   <Divider className='mlb-1' />
                   <MenuItem className='gap-3 pli-4' component={Link} href='/profile'>
                     <i className='ri-user-3-line' />
                     <Typography color='text.primary'>My Profile</Typography>
-                  </MenuItem>
-                  <MenuItem className='gap-3 pli-4' onClick={e => handleDropdownClose(e)}>
-                    <i className='ri-settings-4-line' />
-                    <Typography color='text.primary'>Settings</Typography>
-                  </MenuItem>
-                  <MenuItem className='gap-3 pli-4' onClick={e => handleDropdownClose(e)}>
-                    <i className='ri-money-dollar-circle-line' />
-                    <Typography color='text.primary'>Pricing</Typography>
-                  </MenuItem>
-                  <MenuItem className='gap-3 pli-4' onClick={e => handleDropdownClose(e)}>
-                    <i className='ri-question-line' />
-                    <Typography color='text.primary'>FAQ</Typography>
                   </MenuItem>
                   <div className='flex items-center plb-1.5 pli-4'>
                     <Button
