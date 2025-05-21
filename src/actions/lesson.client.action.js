@@ -13,7 +13,7 @@ export const createNewLesson = async data => {
       ...response,
       statusCode: response?.status
     },
-    `/courses/${data?.id}`,
+    `/courses/${data?.id}/days/${data?.dayId}`,
     'path'
   )
 }

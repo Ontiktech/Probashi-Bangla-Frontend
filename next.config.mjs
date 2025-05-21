@@ -22,6 +22,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'probashi-bangla-backend.onrender.com'
+      },
+      {
+        protocol: 'http',
+        hostname: 'www.w3.org'
       }
     ]
   }

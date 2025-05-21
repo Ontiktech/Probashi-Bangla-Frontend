@@ -15,7 +15,7 @@ export const createNewDay = async data => {
       message: response?.error?.message || response?.data?.message || response?.message || 'An error occurred'
     }
 
-    return apiResponse(populatedResponse, `/courses/${data?.courseId}/lesson/${data?.lessonId}`, 'path')
+    return apiResponse(populatedResponse, `/courses/${data?.courseId}`, 'path')
   } catch (error) {
     return {
       status: 'error',
@@ -39,14 +39,14 @@ export const getDayDetails = async id => {
   }
 }
 
-export const deleteDay = async (id, courseId, lessonId) => {
+export const deleteDay = async (id, courseId) => {
   try {
     const response = await fetchData(`admin/days/${id}`, {
       method: 'DELETE',
       cache: 'no-store'
     })
 
-    return apiResponse(response, `/courses/${courseId}/lesson/${lessonId}`, 'path')
+    return apiResponse(response, `/courses/${courseId}`, 'path')
   } catch (error) {
     return {
       status: 'error',
@@ -55,7 +55,7 @@ export const deleteDay = async (id, courseId, lessonId) => {
   }
 }
 
-export const updateDay = async (data, lessonId, courseId) => {
+export const updateDay = async (data, courseId) => {
   try {
     const response = await fetchData(`admin/days/${data?.id}`, {
       method: 'PATCH',
@@ -63,7 +63,7 @@ export const updateDay = async (data, lessonId, courseId) => {
       cache: 'no-store'
     })
 
-    return apiResponse(response, `/courses/${courseId}/lesson/${lessonId}/days/${data?.id}`, 'path')
+    return apiResponse(response, `/courses/${courseId}/days/${data?.id}`, 'path')
   } catch (error) {
     return {
       status: 'error',

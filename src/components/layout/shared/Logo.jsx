@@ -7,14 +7,13 @@ import { useEffect, useRef } from 'react'
 import styled from '@emotion/styled'
 
 // Component Imports
-import MaterializeLogo from '@core/svg/Logo'
 
 // Config Imports
 import themeConfig from '@configs/themeConfig'
 
 // Hook Imports
-import useVerticalNav from '@menu/hooks/useVerticalNav'
 import { useSettings } from '@core/hooks/useSettings'
+import useVerticalNav from '@menu/hooks/useVerticalNav'
 
 const LogoText = styled.span`
   font-size: 1.25rem;
@@ -61,7 +60,7 @@ const Logo = ({ color }) => {
 
   return (
     <div className='flex items-center min-bs-[24px]'>
-      <MaterializeLogo />
+      {/* <MaterializeLogo /> */}
       <LogoText
         color={color}
         ref={logoTextRef}

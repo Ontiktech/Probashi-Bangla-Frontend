@@ -14,7 +14,7 @@ export const createNewFlashCard = async data => {
       ...response,
       statusCode: response?.status
     },
-    `/courses/${data?.id}/lesson/${data?.lessonId}/days/${data?.dayId}`,
+    `/courses/${data?.id}/days/${data?.dayId}/lesson/${data?.lessonId}`,
     'path'
   )
 }
@@ -34,7 +34,7 @@ export const updateFlashCard = async data => {
       ...response,
       statusCode: response?.status
     },
-    `/courses/${data?.id}/lesson/${data?.lessonId}/days/${data?.dayId}`,
+    `/courses/${data?.id}/days/${data?.dayId}/lesson/${data?.lessonId}`,
     'path'
   )
 }

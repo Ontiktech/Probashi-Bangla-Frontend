@@ -19,6 +19,7 @@ const UpdateCourse = ({ course }) => {
   const defaultValues = {
     title: course?.title,
     description: course?.description,
+    totalDays: course?.totalDays,
     language: course?.language,
     targetLanguage: course?.targetLanguage,
     difficulty: course?.difficulty,
@@ -96,6 +97,17 @@ const UpdateCourse = ({ course }) => {
             helperText={errors.description?.message}
             disabled={loading}
             multiline
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Input
+            control={control}
+            name='totalDays'
+            label='Total Days'
+            error={!!errors.totalDays}
+            helperText={errors.totalDays?.message}
+            disabled={loading}
             fullWidth
           />
         </Grid>

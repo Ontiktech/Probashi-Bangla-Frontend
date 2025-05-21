@@ -1,10 +1,10 @@
-import { getCourseDetails } from '@/actions/course.server.action'
+import { getLessonDetails } from '@/actions/lesson.server.action'
 import { Avatar, Button, Card, CardContent, CardHeader, Stack, Typography } from '@mui/material'
 import Link from 'next/link'
-import UpdateCourse from './_components/UpdateCourse'
+import UpdateLesson from './_components/UpdateLesson'
 
-const CourseUpdatePage = async ({ params: { id } }) => {
-  const response = await getCourseDetails(id)
+const UpdateLessonPage = async ({ params: { id, daysId, lessonId } }) => {
+  const response = await getLessonDetails(lessonId)
 
   if (response?.status === 'notFound') {
     notFound()
@@ -13,25 +13,25 @@ const CourseUpdatePage = async ({ params: { id } }) => {
   }
 
   const {
-    data: { course }
+    data: { lesson }
   } = response
 
   return (
     <Card>
       <CardHeader
-        title={<Typography variant='h6'>{course?.title}</Typography>}
+        title={<Typography variant='h6'>{lesson?.title}</Typography>}
         avatar={
           <Avatar>
             <i className='ri-add-circle-fill'></i>
           </Avatar>
         }
-        subheader='Show and manage course details.'
+        subheader='Show and manage course days.'
         action={
-          <Stack direction='row' spacing={1}>
+          <Stack direction='row' spacing={1} alignItems='center'>
             <Button
               variant='outlined'
               component={Link}
-              href='/courses'
+              href={`/courses/${id}/days/${daysId}`}
               startIcon={<i className='ri-arrow-left-line'></i>}
               size='small'
             >
@@ -41,9 +41,9 @@ const CourseUpdatePage = async ({ params: { id } }) => {
         }
       />
       <CardContent>
-        <UpdateCourse course={course} />
+        <UpdateLesson lesson={lesson} courseId={id} lessonId={lessonId} daysId={daysId} />
       </CardContent>
     </Card>
   )
 }
-export default CourseUpdatePage
+export default UpdateLessonPage

@@ -1,9 +1,10 @@
 'use client'
-import { createNewCourse } from '@/actions/course.client.action'
+import { createNewLesson } from '@/actions/lesson.client.action'
 import Input from '@/components/common/form/Input'
 import Select from '@/components/common/form/Select'
 import SingleImageUploader from '@/components/common/form/SingleImageUploader'
-import { createCourseSchema, difficulties, languages } from '@/schema/course.schema'
+import { difficulties } from '@/schema/course.schema'
+import { createLessonSchema } from '@/schema/lesson.schema'
 import { populateValidationErrors, toCapitalize } from '@/utils/common'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Button, CircularProgress, Grid } from '@mui/material'
@@ -12,7 +13,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
-const CreateNewCourse = () => {
+const CreateLesson = ({ courseId, daysId }) => {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const {
@@ -26,37 +27,36 @@ const CreateNewCourse = () => {
     defaultValues: {
       title: '',
       description: '',
-      totalDays: 0,
-      language: '',
-      targetLanguage: '',
+      estimatedMinutes: 0,
       difficulty: '',
-      estimatedHours: 0,
-      imagePath: null
+      lessonOrder: 0,
+      audioIntro: null
     },
     mode: 'onBlur',
-    resolver: yupResolver(createCourseSchema)
+    resolver: yupResolver(createLessonSchema)
   })
 
   const onSubmit = async data => {
     setLoading(true)
 
     try {
-      const response = await createNewCourse(data)
+      const response = await createNewLesson({ courseId, dayId: daysId, ...data })
 
       if (response?.status === 'validationError') {
         populateValidationErrors(response?.errors, setError)
       } else if (response?.status === 'success') {
-        router.push('/courses')
+        router.push(`/courses/${courseId}/days/${daysId}`)
         toast.success(response?.message)
       } else {
         throw new Error(response?.message)
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to create course')
+      toast.error(error.message || 'Failed to create lesson')
     } finally {
       setLoading(false)
     }
   }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={4}>
@@ -66,18 +66,21 @@ const CreateNewCourse = () => {
             errors={errors}
             watch={watch}
             control={control}
-            name='imagePath'
-            error={!!errors.imagePath}
-            helperText={errors.imagePath?.message}
-            defaultMessage='Only .jpg, .jpeg and .png files are allowed'
+            name='audioIntro'
+            error={!!errors.audioIntro}
+            helperText={errors.audioIntro?.message}
+            defaultMessage='Only .mp3 files are allowed'
             disabled={loading}
+            formats={['.mp3']}
+            dragActiveText='Drop the audio here...'
+            dragInActiveText='Drag and drop an audio here or click to upload'
           />
         </Grid>
         <Grid item xs={12}>
           <Input
+            label='Title'
             control={control}
             name='title'
-            label='Title'
             error={!!errors.title}
             helperText={errors.title?.message}
             disabled={loading}
@@ -86,9 +89,9 @@ const CreateNewCourse = () => {
         </Grid>
         <Grid item xs={12}>
           <Input
+            label='Description'
             control={control}
             name='description'
-            label='Description'
             error={!!errors.description}
             helperText={errors.description?.message}
             disabled={loading}
@@ -98,51 +101,17 @@ const CreateNewCourse = () => {
         </Grid>
         <Grid item xs={12}>
           <Input
+            label='Estimated Minutes'
             control={control}
-            name='totalDays'
-            label='Total Days'
-            error={!!errors.totalDays}
-            helperText={errors.totalDays?.message}
+            name='estimatedMinutes'
+            error={!!errors.estimatedMinutes}
+            helperText={errors.estimatedMinutes?.message}
             disabled={loading}
             type='number'
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Select
-            name='language'
-            control={control}
-            error={!!errors?.language}
-            helperText={errors?.language?.message || ''}
-            label='Language'
-            data={[
-              { text: 'None', value: '' },
-              ...languages.map(language => ({
-                text: toCapitalize(language),
-                value: language
-              }))
-            ]}
-            disabled={loading}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Select
-            name='targetLanguage'
-            control={control}
-            error={!!errors?.targetLanguage}
-            helperText={errors?.targetLanguage?.message || ''}
-            label='Target Language'
-            data={[
-              { text: 'None', value: '' },
-              ...languages.map(language => ({
-                text: toCapitalize(language),
-                value: language
-              }))
-            ]}
-            disabled={loading}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
           <Select
             name='difficulty'
             control={control}
@@ -159,18 +128,31 @@ const CreateNewCourse = () => {
             disabled={loading}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
           <Input
-            label='Estimated Hours'
             control={control}
-            name='estimatedHours'
-            error={!!errors.estimatedHours}
-            helperText={errors.estimatedHours?.message}
+            name='lessonOrder'
+            label='Lesson Order'
+            error={!!errors.lessonOrder}
+            helperText={errors.lessonOrder?.message}
             disabled={loading}
             type='number'
             fullWidth
           />
         </Grid>
+        <Grid item xs={12}>
+          <Input
+            control={control}
+            name='xpReward'
+            label='Xp Reward'
+            error={!!errors.xpReward}
+            helperText={errors.xpReward?.message}
+            disabled={loading}
+            type='number'
+            fullWidth
+          />
+        </Grid>
+
         <Grid item xs={12} sx={{ textAlign: 'right' }}>
           <Button
             type='submit'
@@ -185,4 +167,4 @@ const CreateNewCourse = () => {
     </form>
   )
 }
-export default CreateNewCourse
+export default CreateLesson

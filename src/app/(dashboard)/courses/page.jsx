@@ -19,6 +19,7 @@ const CoursePage = () => {
             startIcon={<i className='ri-add-line'></i>}
             component={Link}
             href='/courses/create'
+            size='small'
           >
             Create New
           </Button>

@@ -13,11 +13,6 @@ const verticalMenuData = () => [
     label: 'User',
     href: '/user',
     icon: 'ri-user-3-fill'
-  },
-  {
-    label: 'About',
-    href: '/about',
-    icon: 'ri-information-line'
   }
 ]
 

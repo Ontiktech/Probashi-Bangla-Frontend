@@ -20,7 +20,7 @@ import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import LessonLists from './_components/LessonLists'
+import DayList from './_components/DayList'
 
 const CourseDetails = async ({ params: { id } }) => {
   const response = await getCourseDetails(id)
@@ -50,11 +50,11 @@ const CourseDetails = async ({ params: { id } }) => {
             <Button
               variant='contained'
               component={Link}
-              href={`/courses/${id}/lessons/create`}
+              href={`/courses/${id}/days/create`}
               startIcon={<i className='ri-add-large-line'></i>}
               size='small'
             >
-              Create Lesson
+              Create Day
             </Button>
             <Button
               variant='contained'
@@ -79,7 +79,7 @@ const CourseDetails = async ({ params: { id } }) => {
         }
       />
       <CardContent>
-        <Box component='div' className='aspect-video' sx={{ mb: 5 }}>
+        <Box component='div' className='aspect-[16/7]' sx={{ mb: 5 }}>
           <Image
             src={course?.imagePath || '/images/blank/no-image.png'}
             alt='avatar'
@@ -130,7 +130,7 @@ const CourseDetails = async ({ params: { id } }) => {
           </Table>
         </TableContainer>
 
-        <LessonLists lessons={course?.lessons} courseId={id} />
+        <DayList days={course?.days} courseId={id} />
       </CardContent>
     </Card>
   )

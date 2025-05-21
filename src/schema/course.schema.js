@@ -11,6 +11,7 @@ const IMAGE_MAX_SIZE = 5 * 1024 * 1024
 const baseSchema = {
   title: yup.string().required('Please enter a title!').max(255, 'Title must be less than 255 characters!'),
   description: yup.string().nullable().max(5000, 'Description must be less than 5000 characters!'),
+  totalDays: yup.number().required('Please enter a total days!').min(1, 'Total days must be greater than 0!'),
   language: yup.string().required('Please enter a language!').oneOf(languages, 'Please select a valid language!'),
   targetLanguage: yup
     .string()

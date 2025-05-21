@@ -1,10 +1,11 @@
-import { getCourseDetails } from '@/actions/course.server.action'
+import { getFlashCardDetails } from '@/actions/flashCard.server.action'
 import { Avatar, Button, Card, CardContent, CardHeader, Stack, Typography } from '@mui/material'
 import Link from 'next/link'
-import UpdateCourse from './_components/UpdateCourse'
+import { notFound } from 'next/navigation'
+import UpdateFlashCard from './_component/UpdateFlashCard'
 
-const CourseUpdatePage = async ({ params: { id } }) => {
-  const response = await getCourseDetails(id)
+const UpdateFlashCardPage = async ({ params: { id, lessonId, daysId, flashCardId } }) => {
+  const response = await getFlashCardDetails(flashCardId)
 
   if (response?.status === 'notFound') {
     notFound()
@@ -13,25 +14,24 @@ const CourseUpdatePage = async ({ params: { id } }) => {
   }
 
   const {
-    data: { course }
+    data: { flash_card }
   } = response
-
   return (
     <Card>
       <CardHeader
-        title={<Typography variant='h6'>{course?.title}</Typography>}
+        title={<Typography variant='h6'>{flash_card?.frontText}</Typography>}
         avatar={
           <Avatar>
             <i className='ri-add-circle-fill'></i>
           </Avatar>
         }
-        subheader='Show and manage course details.'
+        subheader='Show and manage flash card details.'
         action={
           <Stack direction='row' spacing={1}>
             <Button
               variant='outlined'
               component={Link}
-              href='/courses'
+              href={`/courses/${id}/days/${daysId}/lessons/${lessonId}`}
               startIcon={<i className='ri-arrow-left-line'></i>}
               size='small'
             >
@@ -41,9 +41,15 @@ const CourseUpdatePage = async ({ params: { id } }) => {
         }
       />
       <CardContent>
-        <UpdateCourse course={course} />
+        <UpdateFlashCard
+          flashCard={flash_card}
+          courseId={id}
+          lessonId={lessonId}
+          daysId={daysId}
+          flashCardId={flashCardId}
+        />
       </CardContent>
     </Card>
   )
 }
-export default CourseUpdatePage
+export default UpdateFlashCardPage
