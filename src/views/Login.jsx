@@ -9,7 +9,6 @@ import { useSearchParams } from 'next/navigation'
 
 // MUI Imports
 import Checkbox from '@mui/material/Checkbox'
-import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -187,9 +186,6 @@ const LoginV2 = ({ mode }) => {
 
             <div className='flex justify-between items-center flex-wrap gap-x-3 gap-y-1'>
               <FormControlLabel control={<Checkbox />} label='Remember me' />
-              <Typography className='text-end' color='primary' component={Link} href='/forgot-password'>
-                Forgot password?
-              </Typography>
             </div>
             <LoadingButton
               loading={loading}
@@ -207,13 +203,13 @@ const LoginV2 = ({ mode }) => {
             >
               Log In
             </LoadingButton>
-            <div className='flex justify-center items-center flex-wrap gap-2'>
+            {/* <div className='flex justify-center items-center flex-wrap gap-2'>
               <Typography>New on our platform?</Typography>
               <Typography component={Link} color='primary'>
                 Create an account
               </Typography>
-            </div>
-            <Divider className='gap-3 text-textPrimary'>or</Divider>
+            </div> */}
+            {/* <Divider className='gap-3 text-textPrimary'>or</Divider>
             <div className='flex justify-center items-center gap-2'>
               <IconButton size='small' className='text-facebook'>
                 <i className='ri-facebook-fill' />
@@ -227,7 +223,7 @@ const LoginV2 = ({ mode }) => {
               <IconButton size='small' className='text-googlePlus'>
                 <i className='ri-google-fill' />
               </IconButton>
-            </div>
+            </div> */}
           </form>
         </div>
       </div>

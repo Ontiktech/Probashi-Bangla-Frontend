@@ -36,6 +36,7 @@ const CreateDaysPage = async ({ params: { id } }) => {
             component={Link}
             href={`/courses/${id}`}
             startIcon={<i className='ri-arrow-left-line'></i>}
+            size='small'
           >
             Back
           </Button>
