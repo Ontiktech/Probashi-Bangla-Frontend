@@ -24,6 +24,7 @@ import Typography from '@mui/material/Typography'
 import { signOut } from 'next-auth/react'
 
 import { useSettings } from '@core/hooks/useSettings'
+import Link from 'next/link'
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -118,7 +119,7 @@ const UserDropdown = () => {
                     </div>
                   </div>
                   <Divider className='mlb-1' />
-                  <MenuItem className='gap-3 pli-4' onClick={e => handleDropdownClose(e)}>
+                  <MenuItem className='gap-3 pli-4' component={Link} href='/profile'>
                     <i className='ri-user-3-line' />
                     <Typography color='text.primary'>My Profile</Typography>
                   </MenuItem>
