@@ -1,15 +1,23 @@
 'use client'
-import { useRouter } from 'next/navigation'
-import React, { useState, useEffect, useMemo } from 'react'
+import { deleteAppUser, getAllAppUsers } from '@/actions/user.action'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 import {
+  Alert,
   Avatar,
   Box,
+  Button,
   Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   IconButton,
   Menu,
   MenuItem,
   Paper,
+  Snackbar,
   Stack,
   Table,
   TableBody,
@@ -19,18 +27,10 @@ import {
   TablePagination,
   TableRow,
   TextField,
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  CircularProgress,
-  Snackbar,
-  Alert
+  Typography
 } from '@mui/material'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import { getAllAppUsers, deleteAppUser } from '@/actions/user.action'
+import { useRouter } from 'next-nprogress-bar'
+import { useEffect, useMemo, useState } from 'react'
 
 const ProficiencyLevel = {
   BEGINNER: 'BEGINNER',
@@ -82,7 +82,7 @@ const UserListTable = () => {
     }
 
     fetchUsers()
-  }, []);
+  }, [])
 
   // Enhanced search functionality
   const filteredUsers = useMemo(() => {

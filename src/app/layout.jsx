@@ -6,6 +6,7 @@ import '@/app/globals.css'
 
 // Generated Icon CSS Imports
 import { toastConfig } from '@/configs/toastConfig'
+import NextProgressBarProvider from '@/providers/NextProgressBarProvider'
 import '@assets/iconify-icons/generated-icons.css'
 import { ToastContainer } from 'react-toastify'
 
@@ -21,7 +22,7 @@ const RootLayout = ({ children }) => {
   return (
     <html id='__next' lang='en' dir={direction}>
       <body className='flex is-full min-bs-full flex-auto flex-col'>
-        {children}
+        <NextProgressBarProvider>{children}</NextProgressBarProvider>
         <ToastContainer {...toastConfig} />
       </body>
     </html>

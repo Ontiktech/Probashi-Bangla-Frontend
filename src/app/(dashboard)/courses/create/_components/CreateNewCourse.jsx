@@ -7,7 +7,7 @@ import { createCourseSchema, difficulties, languages } from '@/schema/course.sch
 import { populateValidationErrors, toCapitalize } from '@/utils/common'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Button, CircularProgress, Grid } from '@mui/material'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next-nprogress-bar'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'

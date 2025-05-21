@@ -3,9 +3,6 @@
 // React Imports
 import { useRef, useState } from 'react'
 
-// Next Imports
-import { useRouter } from 'next/navigation'
-
 // MUI Imports
 import Avatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
@@ -24,6 +21,7 @@ import Typography from '@mui/material/Typography'
 import { signOut } from 'next-auth/react'
 
 import { useSettings } from '@core/hooks/useSettings'
+import { useRouter } from 'next-nprogress-bar'
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({

@@ -3399,12 +3399,12 @@ next-auth@^4.24.11:
     preact-render-to-string "^5.1.19"
     uuid "^8.3.2"
 
-next-nprogress-bar@^2.4.7:
-  version "2.4.7"
-  resolved "https://registry.yarnpkg.com/next-nprogress-bar/-/next-nprogress-bar-2.4.7.tgz#42875a9f3a024263bbeb6c2ab490b056860e609a"
-  integrity sha512-OeveNQYFBhQhZ+RgrDnvHNUEQfHCmipymmD4AfAVE9pFV4jeWi7/nNK5f0lIk7ODRrtjyyr/n2YpkRbs5kUoMg==
+next-nprogress-bar@2.3.15:
+  version "2.3.15"
+  resolved "https://registry.yarnpkg.com/next-nprogress-bar/-/next-nprogress-bar-2.3.15.tgz#a7d22147cd60aef7b1e84472d9edee36166b839e"
+  integrity sha512-8s8slKMUXvDrl7wWzKyWt6BJQThOJREpCicdbi66xAOzQ23DeIauEzMGPg1BMixnqlIRY3ayUO/ey9dafkgWcA==
   dependencies:
-    nprogress-v2 "^1.0.4"
+    nprogress "^0.2.0"
 
 next@14.2.5:
   version "14.2.5"
@@ -3451,10 +3451,10 @@ npm-run-path@^4.0.1:
   dependencies:
     path-key "^3.0.0"
 
-nprogress-v2@^1.0.4:
-  version "1.1.10"
-  resolved "https://registry.yarnpkg.com/nprogress-v2/-/nprogress-v2-1.1.10.tgz#6a31560d150199964d1c071a5e590e4287933cfe"
-  integrity sha512-MypWLNIPIM07SS0bAc/oac0vhVFz9vAHm7d1sj//Pnf3J03LQ3CuWrlDteIu6exq0fIvkDJ6tUDRWLaifsIt5w==
+nprogress@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/nprogress/-/nprogress-0.2.0.tgz#cb8f34c53213d895723fcbab907e9422adbcafb1"
+  integrity sha512-I19aIingLgR1fmhftnbWWO3dXc0hSxqHQHQb3H8m+K3TnEn/iSeTZZOyvKXWqQESMwuUVnatlCnZdLBZZt2VSA==
 
 nth-check@^2.0.1:
   version "2.1.1"

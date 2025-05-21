@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 // Next Imports
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 // MUI Imports
 import Checkbox from '@mui/material/Checkbox'
@@ -34,6 +34,7 @@ import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 import { LoadingButton } from '@mui/lab'
 import { CircularProgress, FormControl } from '@mui/material'
+import { useRouter } from 'next-nprogress-bar'
 import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
