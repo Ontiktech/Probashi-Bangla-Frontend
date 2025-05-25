@@ -1,12 +1,23 @@
-import Link from 'next/link'
+import { getAppUserById } from '@/actions/user.action'
 import { Box, Breadcrumbs, Button, Card, CardContent, CardHeader, Typography } from '@mui/material'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import EditUser from './_components/EditUser'
 
-const EditUserPage = ({params}) => {
+const EditUserPage = async ({ params: { id } }) => {
+  const response = await getAppUserById(id)
+
+  if (response === 'notFound') {
+    notFound()
+  }
+
+  const {
+    data: { user }
+  } = response
   return (
     <Box>
       <Typography variant='h3' color='primary' fontWeight={700}>
-        Update User
+        {user?.firstName} {user?.lastName}
       </Typography>
       <Breadcrumbs aria-label='breadcrumb' sx={{ mb: 10 }}>
         <Link color='inherit' href='/'>
@@ -15,7 +26,9 @@ const EditUserPage = ({params}) => {
         <Link color='inherit' href='/users'>
           Users
         </Link>
-        <Typography sx={{ color: 'text.primary' }}>Create New</Typography>
+        <Typography sx={{ color: 'text.primary' }}>
+          {user?.firstName} {user?.lastName}
+        </Typography>
       </Breadcrumbs>
       <Card>
         <CardHeader
@@ -29,7 +42,7 @@ const EditUserPage = ({params}) => {
           }
         />
         <CardContent>
-          <EditUser userId={params.id} />
+          <EditUser userId={id} user={user} />
         </CardContent>
       </Card>
     </Box>

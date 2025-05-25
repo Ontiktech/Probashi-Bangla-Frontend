@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { Avatar, Box, Breadcrumbs, Button, Card, CardContent, CardHeader, Typography } from '@mui/material'
+import Link from 'next/link'
 import UserListsTable from './_components/UserListTable'
 
 const UsersPage = () => {

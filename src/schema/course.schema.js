@@ -1,6 +1,18 @@
 import * as yup from 'yup'
 
-export const languages = ['ENGLISH', 'BANGLA', 'FRENCH', 'SPANISH']
+export const languages = [
+  'ENGLISH',
+  'SPANISH',
+  'FRENCH',
+  'GERMAN',
+  'ITALIAN',
+  'PORTUGUESE',
+  'RUSSIAN',
+  'MANDARIN',
+  'JAPANESE',
+  'KOREAN',
+  'ARABIC'
+]
 export const difficulties = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED']
 const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/png']
 const IMAGE_MAX_SIZE = 5 * 1024 * 1024

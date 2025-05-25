@@ -3,55 +3,54 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { Grid, Stack } from '@mui/material'
-import { useRouter } from 'next-nprogress-bar'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
 import Input from '@components/common/form/Input'
 
-import { createAppUser } from '@/actions/user.action'
+import { updateAppUser } from '@/actions/user.action'
 import { createUserSchema } from '@/schema/user.schema'
 import { populateValidationErrors } from '@/utils/common'
+import { useSession } from 'next-auth/react'
 
-const CreateUser = ({ session }) => {
+const EditUser = ({ userId, user }) => {
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const { data: session } = useSession()
 
+  const defaultValues = {
+    firstName: user?.firstName,
+    lastName: user?.lastName,
+    phoneNumber: user?.phoneNumber,
+    email: user?.email || null
+  }
   const {
     control,
     handleSubmit,
     setError,
     formState: { errors }
   } = useForm({
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      phoneNumber: '',
-      email: ''
-      // nativeLanguage: '',
-      // learningGoal: ''
-      // proficiencyLevel: ProficiencyLevel.BEGINNER
-    },
+    defaultValues,
     resolver: yupResolver(createUserSchema)
   })
 
   const onSubmit = async data => {
     setLoading(true)
-
     try {
-      const response = await createAppUser({
-        ...data,
-        updatedBy: session?.user?.id
-      })
+      const response = await updateAppUser(
+        {
+          ...data,
+          updatedBy: session?.user?.id
+        },
+        userId
+      )
 
       if (response?.status === 'validationError') {
         populateValidationErrors(response?.errors, setError)
       } else if (response?.status === 'success') {
-        router.replace('/user')
-        toast.success(response.message) // Use the message from response
+        toast.success(response.message)
       } else {
-        throw new Error(response?.message || 'Failed to create user')
+        throw new Error(response?.message || 'Failed to update user')
       }
     } catch (error) {
       toast.error(error?.message || 'An unexpected error occurred')
@@ -107,42 +106,6 @@ const CreateUser = ({ session }) => {
             fullWidth
           />
         </Grid>
-        {/* <Grid item xs={12} sm={6}>
-          <Input
-            name='nativeLanguage'
-            control={control}
-            error={!!errors?.nativeLanguage}
-            helperText={errors?.nativeLanguage?.message}
-            label='Native Language'
-            placeholder='English'
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Input
-            name='learningGoal'
-            control={control}
-            error={!!errors?.learningGoal}
-            helperText={errors?.learningGoal?.message}
-            label='Learning Goal'
-            placeholder='Improve conversational skills'
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Select
-            control={control}
-            name='proficiencyLevel'
-            error={!!errors?.proficiencyLevel}
-            helperText={errors?.proficiencyLevel?.message ?? ''}
-            label='Proficiency Level'
-            data={[
-              { value: ProficiencyLevel.BEGINNER, text: 'Beginner' },
-              { value: ProficiencyLevel.INTERMEDIATE, text: 'Intermediate' },
-              { value: ProficiencyLevel.ADVANCED, text: 'Advanced' }
-            ]}
-          />
-        </Grid> */}
       </Grid>
       <Stack direction='row' justifyContent='flex-end' alignItems='center'>
         <LoadingButton
@@ -153,11 +116,11 @@ const CreateUser = ({ session }) => {
           sx={{ mt: 4 }}
           type='submit'
         >
-          Create User
+          Edit User
         </LoadingButton>
       </Stack>
     </form>
   )
 }
 
-export default CreateUser
+export default EditUser

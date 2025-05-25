@@ -1,6 +1,7 @@
 import { getCourseDetails } from '@/actions/course.server.action'
 import { Avatar, Button, Card, CardContent, CardHeader, Stack, Typography } from '@mui/material'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import UpdateCourse from './_components/UpdateCourse'
 
 const CourseUpdatePage = async ({ params: { id } }) => {

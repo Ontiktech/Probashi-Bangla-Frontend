@@ -49,8 +49,6 @@ const AnimatedLogo = ({ size = 'md', animated = false, className = '' }) => {
 
   const colorSet = logoColors[mode]
 
-  console.log({ isHovered, isBreakpointReached, layout })
-
   return (
     <div className={`flex items-center ${className}`}>
       {/* Logo Icon */}

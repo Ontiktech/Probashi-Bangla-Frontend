@@ -1,386 +1,347 @@
 'use client'
-import { deleteAppUser, getAllAppUsers } from '@/actions/user.action'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { useCallback, useEffect, useMemo, useReducer } from 'react'
+
 import {
-  Alert,
   Avatar,
   Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  Paper,
-  Snackbar,
   Stack,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
   TablePagination,
-  TableRow,
-  TextField,
   Typography
 } from '@mui/material'
-import { useRouter } from 'next-nprogress-bar'
-import { useEffect, useMemo, useState } from 'react'
 
-const ProficiencyLevel = {
-  BEGINNER: 'BEGINNER',
-  INTERMEDIATE: 'INTERMEDIATE',
-  ADVANCED: 'ADVANCED'
+import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
+
+import { deleteAppUser, getAllAppUsers } from '@/actions/user.action'
+import CustomTableBody from '@/components/common/CustomTableBody'
+import CustomTableHeader from '@/components/common/CustomTableHeader'
+import Modal from '@/components/common/Modal'
+import dayjs from 'dayjs'
+import { debounce } from 'lodash'
+import Image from 'next/image'
+import { toast } from 'react-toastify'
+import ActionDropdown from './ActionDropdown'
+
+/**
+ * set initial state
+ */
+const initialState = {
+  openDelete: false,
+  deleteLoading: false,
+  selectedDeleteId: null,
+  search: '',
+  page: 1,
+  limit: 10,
+  loading: true,
+  totalUsers: 0,
+  users: [],
+  isError: false,
+  error: null,
+  sortOrder: 'desc',
+  sortBy: 'createdAt'
 }
 
-const AppUserVerificationStatus = {
-  VERIFIED: 'VERIFIED',
-  UNVERIFIED: 'UNVERIFIED',
-  BANNED: 'BANNED'
+/**
+ * initialize column helper for react table
+ */
+const columnHelper = createColumnHelper()
+
+/**
+ * reducer function
+ * @param state
+ * @param action
+ * @returns
+ */
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_PAGE':
+      return { ...state, page: action.payload }
+    case 'SET_LIMIT':
+      return { ...state, limit: action.payload }
+    case 'SET_LOADING':
+      return { ...state, loading: action?.payload }
+    case 'SET_TOTAL_USERS':
+      return { ...state, totalUsers: action.payload }
+    case 'SET_USERS':
+      return { ...state, users: action.payload }
+    case 'SET_ERROR':
+      return { ...state, isError: true, error: action.payload }
+    case 'RESET_ERROR':
+      return { ...state, isError: false, error: null }
+    case 'TOGGLE_DELETE':
+      return { ...state, openDelete: !state?.openDelete }
+    case 'TOGGLE_DELETE_LOADING':
+      return { ...state, deleteLoading: !state?.deleteLoading }
+    case 'SET_SEARCH':
+      return { ...state, search: action.payload }
+    case 'SET_SORT':
+      return { ...state, sortBy: action.payload.sortBy, sortOrder: action.payload.sortOrder }
+    case 'SET_DELETE_LOADING':
+      return { ...state, deleteLoading: action.payload }
+    case 'SET_SELECTED_DELETE_ID':
+      return { ...state, selectedDeleteId: action.payload }
+    default:
+      return state
+  }
 }
 
-const UserListTable = () => {
-  const router = useRouter()
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [anchorEl, setAnchorEl] = useState(null)
-  const [selectedUser, setSelectedUser] = useState(null)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'success'
+const UserListsTable = () => {
+  const [state, dispatch] = useReducer(reducer, initialState)
+
+  const {
+    page,
+    limit,
+    loading,
+    totalUsers,
+    users,
+    isError,
+    search,
+    error,
+    sortOrder,
+    sortBy,
+    selectedDeleteId,
+    openDelete,
+    deleteLoading
+  } = state
+
+  /**
+   * fetch users function
+   */
+  const fetchUsers = useCallback(async () => {
+    dispatch({ type: 'SET_LOADING', payload: true })
+    dispatch({ type: 'RESET_ERROR' })
+
+    try {
+      const response = await getAllAppUsers(page, limit, search, sortOrder, sortBy)
+
+      console.log({ response })
+
+      if (response?.status === 'success' && response?.items) {
+        dispatch({ type: 'SET_USERS', payload: response?.items })
+        dispatch({ type: 'SET_TOTAL_USERS', payload: response?.totalItems ?? 0 })
+      }
+    } catch (error) {
+      dispatch({ type: 'SET_ERROR', payload: error.message || 'Failed to fetch users.' })
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false })
+    }
+  }, [page, limit, search, sortBy, sortOrder])
+
+  /**
+   * debouncing fetch users by useEffect
+   */
+  useEffect(() => {
+    const debouncedFetch = debounce(() => {
+      fetchUsers()
+    }, 500)
+
+    debouncedFetch()
+
+    return () => {
+      debouncedFetch.cancel()
+    }
+  }, [fetchUsers])
+
+  /**
+   * define react table rows
+   */
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('firstName', {
+        header: 'User',
+        cell: ({ row }) => (
+          <Stack direction='row' alignItems='center' spacing={2}>
+            <Avatar variant='rounded'>
+              <Image
+                src={row?.original?.avatarUrl ?? '/images/avatars/1.png'}
+                alt={row?.original?.firstName + ' ' + row?.original?.lastName}
+                width={50}
+                height={50}
+              />
+            </Avatar>
+            <Box component='div'>
+              <Typography variant='h6'>
+                {row?.original?.firstName} {row?.original?.lastName}
+              </Typography>
+              <Typography variant='body2' color='text.secondary'>
+                {dayjs(row?.original?.createdAt).format('DD MMM, YYYY')}
+              </Typography>
+            </Box>
+          </Stack>
+        )
+      }),
+      columnHelper.accessor('email', {
+        header: 'Email',
+        cell: ({ row }) => row?.original?.email,
+        meta: {
+          alignHeader: 'center'
+        }
+      }),
+      columnHelper.accessor('phoneNumber', {
+        header: 'Phone Number',
+        cell: ({ row }) => row?.original?.phoneNumber,
+        meta: {
+          alignHeader: 'center'
+        }
+      }),
+      columnHelper.accessor('streak', {
+        header: 'Streak',
+        cell: ({ row }) => row?.original?.streak,
+        meta: {
+          alignHeader: 'center'
+        }
+      }),
+      columnHelper.display({
+        id: 'action',
+        header: 'Action',
+        enableSorting: false,
+        cell: ({ row }) => <ActionDropdown id={row?.original?.id} toggleDeleteModal={toggleDeleteModal} />,
+        meta: {
+          alignHeader: 'center'
+        }
+      })
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
+
+  /**
+   * define react table
+   */
+  const table = useReactTable({
+    data: users,
+    columns,
+    state: {
+      pagination: {
+        pageIndex: page - 1,
+        pageSize: limit
+      },
+      sorting: [{ id: sortBy, desc: sortOrder === 'desc' }]
+    },
+    manualPagination: true,
+    manualSorting: true,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel()
   })
 
-  // Fetch users on component mount
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true)
-        const result = await getAllAppUsers()
-        setUsers(result)
-      } catch (err) {
-        setError(err.message)
-        setSnackbar({
-          open: true,
-          message: `Failed to fetch users: ${err.message}`,
-          severity: 'error'
-        })
-        setUsers([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchUsers()
-  }, [])
-
-  // Enhanced search functionality
-  const filteredUsers = useMemo(() => {
-    if (!searchTerm) return users
-
-    const lowercasedSearch = searchTerm.toLowerCase()
-
-    return users.filter(user => {
-      const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase()
-      const email = user.email?.toLowerCase() || ''
-      const phone = user.phoneNumber || ''
-      const language = user.nativeLanguage?.toLowerCase() || ''
-      const proficiency = user.proficiencyLevel?.toLowerCase() || ''
-      const status = user.verified?.toLowerCase() || ''
-
-      return (
-        fullName.includes(lowercasedSearch) ||
-        email.includes(lowercasedSearch) ||
-        phone.includes(searchTerm) || // Keep phone number search as-is for better number matching
-        language.includes(lowercasedSearch) ||
-        proficiency.includes(lowercasedSearch) ||
-        status.includes(lowercasedSearch)
-      )
-    })
-  }, [users, searchTerm])
-
-  // Reset to first page when search term changes
-  useEffect(() => {
-    setPage(0)
-  }, [searchTerm])
-
-  // Pagination
-  const paginatedUsers = useMemo(() => {
-    return filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-  }, [filteredUsers, page, rowsPerPage])
-
-  const handleMenuOpen = (event, user) => {
-    setAnchorEl(event.currentTarget)
-    setSelectedUser(user)
+  /**
+   * page change handler for react table
+   * @param event
+   * @param newPage
+   */
+  const handlePageChange = (_, newPage) => {
+    dispatch({ type: 'SET_PAGE', payload: Number(newPage + 1) })
   }
 
-  const handleMenuClose = () => {
-    setAnchorEl(null)
-    setSelectedUser(null)
+  /**
+   * page limit handler for react table
+   * @param event
+   */
+  const handleLimitChange = event => {
+    dispatch({ type: 'SET_LIMIT', payload: Number(event.target.value) })
+    dispatch({ type: 'SET_PAGE', payload: 1 })
   }
 
-  const handleEdit = userId => {
-    router.push(`/user/${userId}`)
+  /**
+   * handle sort event
+   * @param column the column to sort by
+   */
+  const handleSort = column => {
+    const newSortBy = column.id
+    const newSortOrder = sortBy === newSortBy && sortOrder === 'asc' ? 'desc' : 'asc'
+
+    dispatch({ type: 'SET_SORT', payload: { sortOrder: newSortOrder, sortBy: newSortBy } })
   }
 
-  const handleDelete = () => {
-    setDeleteDialogOpen(true)
-    setAnchorEl(null)
-  }
-
-  const confirmDelete = async () => {
-    if (!selectedUser?.id) {
-      setSnackbar({
-        open: true,
-        message: 'No user selected for deletion',
-        severity: 'error'
-      })
-      setDeleteDialogOpen(false)
-      return
-    }
+  /**
+   * handle delete action
+   * @param {*} event
+   */
+  const handleDelete = async e => {
+    e.preventDefault()
+    dispatch({ type: 'SET_DELETE_LOADING', payload: true })
 
     try {
-      setLoading(true)
-      const userId = selectedUser.id
-      const result = await deleteAppUser(userId)
+      const response = await deleteAppUser(selectedDeleteId)
 
-      if (result?.statusCode === 200) {
-        setUsers(prev => prev.filter(user => user.id !== userId))
-        setSnackbar({
-          open: true,
-          message: result.data?.message || 'User deleted successfully',
-          severity: 'success'
-        })
+      if (response?.status === 'success') {
+        dispatch({ type: 'TOGGLE_DELETE' })
+        dispatch({ type: 'SET_SELECTED_DELETE_ID', payload: null })
+        fetchUsers()
+        toast.success(response?.message)
       } else {
-        throw new Error(result?.message || 'Failed to delete user')
+        throw new Error(response?.message)
       }
-    } catch (err) {
-      setSnackbar({
-        open: true,
-        message: err.message || 'An unexpected error occurred',
-        severity: 'error'
-      })
+    } catch (error) {
+      toast.error(error?.message || 'Something went wrong')
     } finally {
-      setLoading(false)
-      setDeleteDialogOpen(false)
-      setSelectedUser(null)
+      dispatch({ type: 'SET_DELETE_LOADING', payload: false })
     }
   }
 
-  const formatDate = dateString => {
-    if (!dateString) return 'Never logged in'
-    try {
-      const date = new Date(dateString)
-      return date.toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    } catch {
-      return 'Invalid date'
-    }
+  /**
+   * close delete modal
+   * @param {*} e
+   */
+  const closeDeleteModalHandler = e => {
+    e.preventDefault()
+    dispatch({ type: 'TOGGLE_DELETE' })
+    dispatch({ type: 'SET_SELECTED_DELETE_ID', payload: null })
   }
 
-  if (loading && users.length === 0) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-        <CircularProgress />
-      </Box>
-    )
-  }
-
-  if (error) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <Alert severity='error'>{error}</Alert>
-      </Box>
-    )
+  /**
+   * toggle delete modal
+   * @param {*} e
+   * @param {*} id
+   */
+  const toggleDeleteModal = (e, id) => {
+    e.stopPropagation()
+    e.preventDefault()
+    dispatch({ type: 'TOGGLE_DELETE' })
+    dispatch({ type: 'SET_SELECTED_DELETE_ID', payload: id ?? null })
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Search Filter */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            fullWidth
-            label='Search Users'
-            variant='outlined'
-            size='small'
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            placeholder='Search by name, email, phone, etc.'
-            InputProps={{
-              sx: { backgroundColor: 'background.paper' }
-            }}
-          />
-        </Grid>
-      </Grid>
-
-      {/* Users Table */}
-      <Paper elevation={3} sx={{ overflow: 'hidden' }}>
-        <TableContainer sx={{ maxHeight: 'calc(100vh - 200px)' }}>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell>User</TableCell>
-                <TableCell>Contact</TableCell>
-                <TableCell align='center'>Language</TableCell>
-                <TableCell align='center'>Proficiency Level</TableCell>
-                <TableCell align='center'>Activity</TableCell>
-                <TableCell align='center'>Status</TableCell>
-                <TableCell align='center'>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {paginatedUsers.length > 0 ? (
-                paginatedUsers.map(user => (
-                  <TableRow key={user.id} hover>
-                    <TableCell>
-                      <Stack direction='row' alignItems='center' spacing={2}>
-                        <Avatar src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} />
-                        <Box>
-                          <Typography fontWeight='medium'>
-                            {user.firstName} {user.lastName}
-                          </Typography>
-                          <Typography variant='body2' color='text.secondary'>
-                            {user.nativeLanguage} speaker
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Typography>{user.email || 'No email'}</Typography>
-                      <Typography variant='body2' color='text.secondary'>
-                        {user.phoneNumber}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography fontWeight='medium' align='center'>
-                        {user.nativeLanguage}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align='center'>
-                      <Chip
-                        label={user.proficiencyLevel}
-                        color={
-                          user.proficiencyLevel === ProficiencyLevel.BEGINNER
-                            ? 'info'
-                            : user.proficiencyLevel === ProficiencyLevel.INTERMEDIATE
-                              ? 'primary'
-                              : 'success'
-                        }
-                      />
-                    </TableCell>
-                    <TableCell align='center'>
-                      <Box>
-                        <Typography>XP: {user.xpPoints}</Typography>
-                        <Typography>Streak: {user.streak} days</Typography>
-                        <Typography variant='body2'>Last: {formatDate(user.lastLoginAt)}</Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell align='center'>
-                      <Chip
-                        label={user.verified}
-                        color={
-                          user.verified === AppUserVerificationStatus.VERIFIED
-                            ? 'success'
-                            : user.verified === AppUserVerificationStatus.UNVERIFIED
-                              ? 'warning'
-                              : 'error'
-                        }
-                      />
-                    </TableCell>
-                    <TableCell align='center'>
-                      <IconButton aria-label='actions' onClick={e => handleMenuOpen(e, user)}>
-                        <MoreVertIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={6} align='center' sx={{ py: 4 }}>
-                    <Typography variant='body1'>
-                      {searchTerm ? 'No matching users found' : 'No users available'}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component='div'
-          count={filteredUsers.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          onRowsPerPageChange={e => {
-            setRowsPerPage(parseInt(e.target.value, 10))
-            setPage(0)
-          }}
-        />
-      </Paper>
-
-      {/* Context Menu */}
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={() => handleEdit(selectedUser?.id)}>Edit</MenuItem>
-        <MenuItem onClick={handleDelete}>Delete</MenuItem>
-      </Menu>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete {selectedUser?.firstName} {selectedUser?.lastName}?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button
-            onClick={confirmDelete}
-            color='error'
-            disabled={loading}
-            startIcon={loading ? <CircularProgress size={20} /> : null}
-          >
-            {loading ? 'Deleting...' : 'Delete'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Snackbar Notification */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          severity={snackbar.severity}
-          sx={{ width: '100%' }}
-          variant='filled'
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+    <>
+      <TableContainer>
+        <Table stickyHeader>
+          <TableHead>
+            <CustomTableHeader table={table} handleSort={handleSort} isSortable={true} />
+          </TableHead>
+          <TableBody>
+            <CustomTableBody
+              table={table}
+              loading={loading}
+              isError={isError}
+              error={error}
+              columns={columns}
+              data={users}
+              noDataMessage='No users found!'
+            />
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component='div'
+        count={totalUsers}
+        rowsPerPage={limit}
+        page={page - 1}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleLimitChange}
+      />
+      <Modal
+        open={openDelete}
+        setOpen={closeDeleteModalHandler}
+        action={handleDelete}
+        loading={deleteLoading}
+        title='Are you sure to delete this user?'
+      />
+    </>
   )
 }
 
-export default UserListTable
+export default UserListsTable

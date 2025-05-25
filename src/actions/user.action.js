@@ -35,15 +35,6 @@ export const createAppUser = async userData => {
       cache: 'no-store'
     })
 
-    // Standardize the success response
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return {
-        status: 'success',
-        data: response.data,
-        message: response.data?.message || 'User created successfully'
-      }
-    }
-
     // Let apiResponse handle errors
     return apiResponse(response)
   } catch (error) {
@@ -58,17 +49,29 @@ export const createAppUser = async userData => {
  * Fetches all app users
  */
 
-export const getAllAppUsers = async () => {
+export const getAllAppUsers = async (page, limit, search, sortOrder = 'desc', sortBy = 'createdAt') => {
   try {
-    const response = await fetchData(`admin/app-users`)
+    let url = `admin/app-users?page=${page}&limit=${limit}&sort_order=${sortOrder}&sort_by=${sortBy}`
 
-    if (response?.statusCode !== 200) {
-      throw new Error(response.data?.message || 'Failed to fetch users')
+    if (search) url += `&search=${search}`
+
+    const response = await fetchData(url, {
+      method: 'GET'
+    })
+
+    if (response?.statusCode === 200) {
+      return {
+        status: 'success',
+        items: response?.data?.users
+      }
+    } else {
+      throw new Error(response?.error?.message)
     }
-
-    return response.data?.users || []
   } catch (error) {
-    throw error
+    return {
+      status: 'error',
+      message: error?.message
+    }
   }
 }
 /**
@@ -120,6 +123,25 @@ export const deleteAppUser = async userId => {
       headers: {
         'Content-Type': 'application/json'
       },
+      cache: 'no-store'
+    })
+    return apiResponse(response, '/users', 'path')
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message || 'Network error'
+    }
+  }
+}
+
+export const assignUserToCourse = async data => {
+  try {
+    const response = await fetchData(`admin/app-users/enroll`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
       cache: 'no-store'
     })
     return apiResponse(response)
