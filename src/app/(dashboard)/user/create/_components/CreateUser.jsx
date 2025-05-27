@@ -29,10 +29,8 @@ const CreateUser = ({ session }) => {
       lastName: '',
       phoneNumber: '',
       email: ''
-      // nativeLanguage: '',
-      // learningGoal: ''
-      // proficiencyLevel: ProficiencyLevel.BEGINNER
     },
+    mode: 'onBlur',
     resolver: yupResolver(createUserSchema)
   })
 
