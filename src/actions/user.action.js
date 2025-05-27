@@ -144,6 +144,7 @@ export const assignUserToCourse = async data => {
       body: JSON.stringify(data),
       cache: 'no-store'
     })
+    console.log({ response })
     return apiResponse(response)
   } catch (error) {
     return {

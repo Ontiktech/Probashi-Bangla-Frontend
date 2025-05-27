@@ -54,7 +54,7 @@ const UserViewPage = async ({ params: { id } }) => {
           <Typography variant='body2'>{user?.email}</Typography>
           <Typography variant='body2'>{user?.phoneNumber}</Typography>
         </Stack>
-        <AssignCourse userId={id} />
+        <AssignCourse userId={id} courses={user?.courses} />
       </CardContent>
     </Card>
   )

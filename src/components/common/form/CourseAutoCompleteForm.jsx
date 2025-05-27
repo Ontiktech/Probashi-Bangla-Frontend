@@ -77,7 +77,7 @@ const CourseAutoComplete = ({
     dispatch({ type: 'RESET_ERROR' })
 
     try {
-      const response = await getAllCourses(currentPage, 10, searchQuery, 'true')
+      const response = await getAllCourses(currentPage, 10, searchQuery)
 
       if (response?.items) {
         dispatch({
@@ -172,8 +172,8 @@ const CourseAutoComplete = ({
           getOptionLabel={option => option?.title || ''}
           isOptionEqualToValue={(option, newValue) => option?.id === newValue?.id}
           renderOption={(props, option) => (
-            <li {...props} key={option.id}>
-              {option.title}
+            <li {...props} key={option?.id}>
+              {option?.title}
             </li>
           )}
           renderInput={params => (

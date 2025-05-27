@@ -117,8 +117,6 @@ const UserListsTable = () => {
     try {
       const response = await getAllAppUsers(page, limit, search, sortOrder, sortBy)
 
-      console.log({ response })
-
       if (response?.status === 'success' && response?.items) {
         dispatch({ type: 'SET_USERS', payload: response?.items })
         dispatch({ type: 'SET_TOTAL_USERS', payload: response?.totalItems ?? 0 })

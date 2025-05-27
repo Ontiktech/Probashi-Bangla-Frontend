@@ -19,21 +19,31 @@ import { useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
-const AssignCourse = ({ userId }) => {
+const AssignCourse = ({ userId, courses }) => {
   const [loading, setLoading] = useState(false)
+
+  const defaultValues =
+    courses?.length > 0
+      ? {
+          courses: courses?.map(course => ({
+            courseId: course?.id
+          }))
+        }
+      : {
+          courses: [
+            {
+              courseId: ''
+            }
+          ]
+        }
+
   const {
     control,
     formState: { errors },
     handleSubmit,
     setError
   } = useForm({
-    defaultValues: {
-      courses: [
-        {
-          courseId: ''
-        }
-      ]
-    },
+    defaultValues,
     resolver: yupResolver(assignCourseSchema)
   })
 
@@ -44,6 +54,7 @@ const AssignCourse = ({ userId }) => {
   })
 
   const onSubmit = async data => {
+    console.log({ data })
     setLoading(true)
     try {
       const courseIds = data?.courses?.map(course => course?.courseId)
@@ -85,6 +96,7 @@ const AssignCourse = ({ userId }) => {
                     disabled={loading}
                     error={!!errors?.courses?.[index]?.courseId}
                     helperText={errors?.courses?.[index]?.courseId?.message}
+                    defaultCourseName={courses?.find(course => course?.id === field?.courseId)?.title ?? ''}
                   />
                 </TableCell>
                 <TableCell align='center'>
