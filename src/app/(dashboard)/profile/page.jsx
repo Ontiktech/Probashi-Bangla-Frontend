@@ -3,6 +3,8 @@ import { Avatar, Card, CardContent, CardHeader, Typography } from '@mui/material
 import { notFound } from 'next/navigation'
 import UpdateProfile from './_components/UpdateProfile'
 
+export const dynamic = 'force-dynamic'
+
 const page = async () => {
   const response = await getCurrentUser()
 
