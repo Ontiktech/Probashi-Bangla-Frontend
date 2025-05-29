@@ -6,8 +6,17 @@ const verticalMenuData = () => [
   },
   {
     label: 'Courses',
-    href: '/courses',
-    icon: 'ri-book-line'
+    icon: 'ri-book-line',
+    children: [
+      {
+        label: 'CourseList',
+        href: '/courses'
+      },
+      {
+        label: 'Language',
+        href: '/courses/languages'
+      }
+    ]
   },
   {
     label: 'User',
