@@ -17,8 +17,6 @@ const EditLanguagePage = async ({ params: { id } }) => {
     data: { language }
   } = response
 
-  console.log({ language })
-
   return (
     <Card>
       <CardHeader

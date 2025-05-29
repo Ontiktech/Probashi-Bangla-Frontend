@@ -36,8 +36,6 @@ const CreateUser = ({ session }) => {
     resolver: yupResolver(createUserSchema)
   })
 
-  console.log({ errors })
-
   const onSubmit = async data => {
     setLoading(true)
 
