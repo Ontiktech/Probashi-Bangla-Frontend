@@ -38,8 +38,6 @@ const CreateNewCourse = () => {
     resolver: yupResolver(createCourseSchema)
   })
 
-  console.log(watch())
-
   const onSubmit = async data => {
     setLoading(true)
 

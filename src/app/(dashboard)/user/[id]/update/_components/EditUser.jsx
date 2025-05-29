@@ -4,7 +4,9 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { Grid, Stack } from '@mui/material'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 import { toast } from 'react-toastify'
 
 import Input from '@components/common/form/Input'
@@ -85,14 +87,22 @@ const EditUser = ({ userId, user }) => {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Input
+          <Controller
             name='phoneNumber'
             control={control}
-            error={!!errors?.phoneNumber}
-            helperText={errors?.phoneNumber?.message}
-            label='Phone Number'
-            placeholder='+1234567890'
-            fullWidth
+            rules={{ required: 'Phone number is required' }}
+            render={({ field }) => (
+              <div className='flex flex-col'>
+                <PhoneInput
+                  international
+                  countryCallingCodeEditable={false}
+                  {...field}
+                  placeholder='Enter phone number'
+                  defaultCountry='BD'
+                />
+                {errors.phoneNumber && <span className='text-red-500 text-sm mt-1'>{errors.phoneNumber.message}</span>}
+              </div>
+            )}
           />
         </Grid>
         <Grid item xs={12} sm={6}>

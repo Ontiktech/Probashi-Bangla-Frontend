@@ -148,17 +148,7 @@ export default function LanguageLists() {
     () => [
       columnHelper.accessor('name', {
         header: 'name',
-        cell: ({ row }) => toCapitalize(row?.original?.name ?? ''),
-        meta: {
-          alignHeader: 'center'
-        }
-      }),
-      columnHelper.accessor('status', {
-        header: 'status',
-        cell: ({ row }) => getStatus(row?.original?.status),
-        meta: {
-          alignHeader: 'center'
-        }
+        cell: ({ row }) => toCapitalize(row?.original?.name ?? '')
       }),
       columnHelper.display({
         id: 'action',

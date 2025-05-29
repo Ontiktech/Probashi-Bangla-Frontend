@@ -1,7 +1,6 @@
 'use client'
 import { createNewLanguage } from '@/actions/language.action'
 import Input from '@/components/common/form/Input'
-import Select from '@/components/common/form/Select'
 import { createLanguage } from '@/schema/language.schema'
 import { populateValidationErrors } from '@/utils/common'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -21,8 +20,7 @@ const CreateLanguage = () => {
     setError
   } = useForm({
     defaultValues: {
-      name: '',
-      status: ''
+      name: ''
     },
     mode: 'onBlur',
     resolver: yupResolver(createLanguage)
@@ -60,21 +58,6 @@ const CreateLanguage = () => {
             helperText={errors.name?.message}
             disabled={loading}
             fullWidth
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Select
-            name='status'
-            control={control}
-            error={!!errors?.status}
-            helperText={errors?.status?.message || ''}
-            label='Status'
-            data={[
-              { text: 'None', value: '' },
-              { text: 'Active', value: 'true' },
-              { text: 'False', value: 'false' }
-            ]}
-            disabled={loading}
           />
         </Grid>
         <Grid item xs={12} sx={{ textAlign: 'right' }}>

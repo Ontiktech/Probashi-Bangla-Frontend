@@ -5,6 +5,5 @@ export const createLanguage = yup.object().shape({
     .string()
     .required('Language name is required')
     .min(2, 'Language name must be at least 2 characters')
-    .max(50, 'Language name must be at most 50 characters'),
-  status: yup.string().oneOf(['true', 'false']).required('Please select a status!')
+    .max(50, 'Language name must be at most 50 characters')
 })

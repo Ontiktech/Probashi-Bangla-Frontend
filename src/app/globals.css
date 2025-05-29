@@ -131,3 +131,15 @@ code {
   background-color: rgb(var(--mui-palette-info-mainChannel) / 0.08);
   border: 0;
 }
+
+@layer components {
+  .PhoneInput .PhoneInputInput {
+    @apply p-5 focus:outline-none;
+  }
+  .PhoneInput {
+    @apply rounded-xl text-base border border-gray-300 overflow-hidden;
+  }
+  .PhoneInput .PhoneInputCountry .PhoneInputCountryIconImg .PhoneInputInternationalIconPhone {
+    @apply hidden;
+  }
+}
