@@ -1,9 +1,10 @@
 'use client'
 import { createNewCourse } from '@/actions/course.client.action'
 import Input from '@/components/common/form/Input'
+import LanguageAutocompleteForm from '@/components/common/form/LanguageAutocompleteForm'
 import Select from '@/components/common/form/Select'
 import SingleImageUploader from '@/components/common/form/SingleImageUploader'
-import { createCourseSchema, difficulties, languages } from '@/schema/course.schema'
+import { createCourseSchema, difficulties } from '@/schema/course.schema'
 import { populateValidationErrors, toCapitalize } from '@/utils/common'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Button, CircularProgress, Grid } from '@mui/material'
@@ -27,8 +28,8 @@ const CreateNewCourse = () => {
       title: '',
       description: '',
       totalDays: 0,
-      language: '',
-      targetLanguage: '',
+      languageId: '',
+      targetLanguageId: '',
       difficulty: '',
       estimatedHours: 0,
       imagePath: null
@@ -36,6 +37,8 @@ const CreateNewCourse = () => {
     mode: 'onBlur',
     resolver: yupResolver(createCourseSchema)
   })
+
+  console.log(watch())
 
   const onSubmit = async data => {
     setLoading(true)
@@ -109,37 +112,21 @@ const CreateNewCourse = () => {
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <Select
-            name='language'
+          <LanguageAutocompleteForm
+            name='languageId'
             control={control}
-            error={!!errors?.language}
-            helperText={errors?.language?.message || ''}
-            label='Language'
-            data={[
-              { text: 'None', value: '' },
-              ...languages.map(language => ({
-                text: toCapitalize(language),
-                value: language
-              }))
-            ]}
             disabled={loading}
+            error={!!errors?.languageId}
+            helperText={errors.languageId?.message}
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <Select
-            name='targetLanguage'
+          <LanguageAutocompleteForm
+            name='targetLanguageId'
             control={control}
-            error={!!errors?.targetLanguage}
-            helperText={errors?.targetLanguage?.message || ''}
-            label='Target Language'
-            data={[
-              { text: 'None', value: '' },
-              ...languages.map(language => ({
-                text: toCapitalize(language),
-                value: language
-              }))
-            ]}
             disabled={loading}
+            error={!!errors?.targetLanguageId}
+            helperText={errors.targetLanguageId?.message}
           />
         </Grid>
         <Grid item xs={12} md={6}>

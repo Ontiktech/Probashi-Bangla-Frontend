@@ -174,14 +174,14 @@ const CourseLists = () => {
       }),
       columnHelper.accessor('language', {
         header: 'Language',
-        cell: ({ row }) => toCapitalize(row?.original?.language ?? ''),
+        cell: ({ row }) => row?.original?.language?.name ?? 'N/A',
         meta: {
           alignHeader: 'center'
         }
       }),
       columnHelper.accessor('targetLanguage', {
         header: 'Target Language',
-        cell: ({ row }) => toCapitalize(row?.original?.targetLanguage ?? ''),
+        cell: ({ row }) => row?.original?.target_language?.name ?? 'N/A',
         meta: {
           alignHeader: 'center'
         }

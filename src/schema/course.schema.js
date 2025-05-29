@@ -1,18 +1,4 @@
 import * as yup from 'yup'
-
-export const languages = [
-  'ENGLISH',
-  'SPANISH',
-  'FRENCH',
-  'GERMAN',
-  'ITALIAN',
-  'PORTUGUESE',
-  'RUSSIAN',
-  'MANDARIN',
-  'JAPANESE',
-  'KOREAN',
-  'ARABIC'
-]
 export const difficulties = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED']
 const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/png']
 const IMAGE_MAX_SIZE = 5 * 1024 * 1024
@@ -24,11 +10,10 @@ const baseSchema = {
   title: yup.string().required('Please enter a title!').max(255, 'Title must be less than 255 characters!'),
   description: yup.string().nullable().max(5000, 'Description must be less than 5000 characters!'),
   totalDays: yup.number().required('Please enter a total days!').min(1, 'Total days must be greater than 0!'),
-  language: yup.string().required('Please enter a language!').oneOf(languages, 'Please select a valid language!'),
-  targetLanguage: yup
+  languageId: yup.string().required('Please enter a language!'),
+  targetLanguageId: yup
     .string()
     .required('Please enter a target language!')
-    .oneOf(languages, 'Please select a valid language!')
     .test('not-same-as-language', 'Language and Target Language must be different!', function (value) {
       const { language } = this.parent
       return value !== language

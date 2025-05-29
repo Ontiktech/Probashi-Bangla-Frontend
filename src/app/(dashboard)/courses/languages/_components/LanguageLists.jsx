@@ -1,26 +1,15 @@
 'use client'
 
+import { deleteLanguage, getAllLanguages } from '@/actions/language.action'
 import CustomTableBody from '@/components/common/CustomTableBody'
 import CustomTableHeader from '@/components/common/CustomTableHeader'
 import Modal from '@/components/common/Modal'
-import {
-  Avatar,
-  Box,
-  Stack,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  Typography
-} from '@mui/material'
-import Image from 'next/image'
-import ActionDropdown from './ActionDropdown'
-import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
-import { useCallback, useEffect, useMemo, useReducer } from 'react'
-import { debounce } from 'lodash'
-import { getAllCourses } from '@/actions/course.server.action'
 import { toCapitalize } from '@/utils/common'
+import { Chip, Table, TableBody, TableContainer, TableHead, TablePagination } from '@mui/material'
+import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
+import { debounce } from 'lodash'
+import { useCallback, useEffect, useMemo, useReducer } from 'react'
+import { toast } from 'react-toastify'
 import LanguageActionDropdown from './LanguageActionDropdown'
 
 /**
@@ -34,8 +23,8 @@ const initialState = {
   page: 1,
   limit: 10,
   loading: true,
-  totalCourses: 0,
-  courses: [],
+  totalLanguages: 0,
+  languages: [],
   isError: false,
   error: null,
   sortOrder: 'desc',
@@ -61,10 +50,10 @@ const reducer = (state, action) => {
       return { ...state, limit: action.payload }
     case 'SET_LOADING':
       return { ...state, loading: action?.payload }
-    case 'SET_TOTAL_COURSES':
-      return { ...state, totalCourses: action.payload }
-    case 'SET_COURSES':
-      return { ...state, courses: action.payload }
+    case 'SET_TOTAL_LANGUAGES':
+      return { ...state, totalLanguages: action.payload }
+    case 'SET_LANGUAGES':
+      return { ...state, languages: action.payload }
     case 'SET_ERROR':
       return { ...state, isError: true, error: action.payload }
     case 'RESET_ERROR':
@@ -86,6 +75,17 @@ const reducer = (state, action) => {
   }
 }
 
+const getStatus = status => {
+  switch (status) {
+    case true:
+      return <Chip label='Active' color='success' size='small' icon={<i className='ri-checkbox-circle-fill'></i>} />
+    case false:
+      return <Chip label='Inactive' color='error' size='small' icon={<i className='ri-close-circle-fill'></i>} />
+    default:
+      return <Chip label='N/A' color='error' size='small' icon={<i className='ri-close-circle-fill'></i>} />
+  }
+}
+
 export default function LanguageLists() {
   const [state, dispatch] = useReducer(reducer, initialState)
 
@@ -93,8 +93,8 @@ export default function LanguageLists() {
     page,
     limit,
     loading,
-    totalCourses,
-    courses,
+    totalLanguages,
+    languages,
     isError,
     search,
     error,
@@ -106,18 +106,18 @@ export default function LanguageLists() {
   } = state
 
   /**
-   * fetch courses function
+   * fetch languages function
    */
-  const fetchCourses = useCallback(async () => {
+  const fetchLanguages = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', payload: true })
     dispatch({ type: 'RESET_ERROR' })
 
     try {
-      const response = await getAllCourses(page, limit, search, sortOrder, sortBy)
+      const response = await getAllLanguages(page, limit, search, sortOrder, sortBy)
 
       if (response?.status === 'success' && response?.items?.length > 0) {
-        dispatch({ type: 'SET_COURSES', payload: response?.items })
-        dispatch({ type: 'SET_TOTAL_COURSES', payload: response?.totalItems ?? 0 })
+        dispatch({ type: 'SET_LANGUAGES', payload: response?.items })
+        dispatch({ type: 'SET_TOTAL_LANGUAGES', payload: response?.totalItems ?? 0 })
       }
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error.message || 'Failed to fetch users.' })
@@ -131,7 +131,7 @@ export default function LanguageLists() {
    */
   useEffect(() => {
     const debouncedFetch = debounce(() => {
-      fetchCourses()
+      fetchLanguages()
     }, 500)
 
     debouncedFetch()
@@ -139,23 +139,23 @@ export default function LanguageLists() {
     return () => {
       debouncedFetch.cancel()
     }
-  }, [fetchCourses])
+  }, [fetchLanguages])
 
   /**
    * define react table rows
    */
   const columns = useMemo(
     () => [
-      columnHelper.accessor('language', {
-        header: 'Language',
-        cell: ({ row }) => toCapitalize(row?.original?.difficulty ?? ''),
+      columnHelper.accessor('name', {
+        header: 'name',
+        cell: ({ row }) => toCapitalize(row?.original?.name ?? ''),
         meta: {
           alignHeader: 'center'
         }
       }),
       columnHelper.accessor('status', {
         header: 'status',
-        cell: ({ row }) => toCapitalize(row?.original?.language ?? ''),
+        cell: ({ row }) => getStatus(row?.original?.status),
         meta: {
           alignHeader: 'center'
         }
@@ -178,7 +178,7 @@ export default function LanguageLists() {
    * define react table
    */
   const table = useReactTable({
-    data: courses,
+    data: languages,
     columns,
     state: {
       pagination: {
@@ -212,17 +212,6 @@ export default function LanguageLists() {
   }
 
   /**
-   * handle sort event
-   * @param column the column to sort by
-   */
-  const handleSort = column => {
-    const newSortBy = column.id
-    const newSortOrder = sortBy === newSortBy && sortOrder === 'asc' ? 'desc' : 'asc'
-
-    dispatch({ type: 'SET_SORT', payload: { sortOrder: newSortOrder, sortBy: newSortBy } })
-  }
-
-  /**
    * handle delete action
    * @param {*} event
    */
@@ -231,12 +220,12 @@ export default function LanguageLists() {
     dispatch({ type: 'SET_DELETE_LOADING', payload: true })
 
     try {
-      const response = await deleteCourse(selectedDeleteId)
+      const response = await deleteLanguage(selectedDeleteId)
 
       if (response?.status === 'success') {
         dispatch({ type: 'TOGGLE_DELETE' })
         dispatch({ type: 'SET_SELECTED_DELETE_ID', payload: null })
-        fetchCourses()
+        fetchLanguages()
         toast.success(response?.message)
       } else {
         throw new Error(response?.message)
@@ -275,7 +264,7 @@ export default function LanguageLists() {
       <TableContainer>
         <Table stickyHeader>
           <TableHead>
-            <CustomTableHeader table={table} handleSort={handleSort} isSortable={true} />
+            <CustomTableHeader table={table} />
           </TableHead>
           <TableBody>
             <CustomTableBody
@@ -284,7 +273,7 @@ export default function LanguageLists() {
               isError={isError}
               error={error}
               columns={columns}
-              data={courses}
+              data={languages}
               noDataMessage='No Language found!'
             />
           </TableBody>
@@ -293,7 +282,7 @@ export default function LanguageLists() {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component='div'
-        count={totalCourses}
+        count={totalLanguages}
         rowsPerPage={limit}
         page={page - 1}
         onPageChange={handlePageChange}

@@ -54,7 +54,6 @@ const AssignCourse = ({ userId, courses }) => {
   })
 
   const onSubmit = async data => {
-    console.log({ data })
     setLoading(true)
     try {
       const courseIds = data?.courses?.map(course => course?.courseId)
