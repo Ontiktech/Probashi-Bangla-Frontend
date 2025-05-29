@@ -13,7 +13,7 @@ import { apiResponse, fetchData } from '@/utils/api'
  */
 export const getAllCourses = async (page, limit, search, sortOrder = 'desc', sortBy = 'createdAt') => {
   try {
-    let url = `admin/courses?page=${page}&limit=${limit}&sort_order=${sortOrder}&sort_by=${sortBy}`
+    let url = `admin/courses?page=${page}&limit=${limit}&sortOrder=${sortOrder.toUpperCase()}&sortBy=${sortBy}`
 
     if (search) url += `&search=${search}`
 
@@ -24,7 +24,8 @@ export const getAllCourses = async (page, limit, search, sortOrder = 'desc', sor
     if (response?.statusCode === 200) {
       return {
         status: 'success',
-        items: response?.data?.courses
+        items: response?.data?.courses?.records ?? [],
+        totalItems: response?.data?.courses?.totalCount ?? 0
       }
     } else {
       throw new Error(response?.error?.message)

@@ -51,7 +51,7 @@ export const createAppUser = async userData => {
 
 export const getAllAppUsers = async (page, limit, search, sortOrder = 'desc', sortBy = 'createdAt') => {
   try {
-    let url = `admin/app-users?page=${page}&limit=${limit}&sort_order=${sortOrder}&sort_by=${sortBy}`
+    let url = `admin/app-users?page=${page}&limit=${limit}&sortOrder=${sortOrder.toUpperCase()}&sortBy=${sortBy}`
 
     if (search) url += `&search=${search}`
 
@@ -62,7 +62,8 @@ export const getAllAppUsers = async (page, limit, search, sortOrder = 'desc', so
     if (response?.statusCode === 200) {
       return {
         status: 'success',
-        items: response?.data?.users
+        items: response?.data?.users?.records ?? [],
+        totalItems: response?.data?.users?.totalCount ?? 0
       }
     } else {
       throw new Error(response?.error?.message)

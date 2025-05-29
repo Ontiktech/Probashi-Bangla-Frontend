@@ -175,6 +175,7 @@ const CourseLists = () => {
       columnHelper.accessor('language', {
         header: 'Language',
         cell: ({ row }) => row?.original?.language?.name ?? 'N/A',
+        enableSorting: false,
         meta: {
           alignHeader: 'center'
         }
@@ -182,6 +183,7 @@ const CourseLists = () => {
       columnHelper.accessor('targetLanguage', {
         header: 'Target Language',
         cell: ({ row }) => row?.original?.target_language?.name ?? 'N/A',
+        enableSorting: false,
         meta: {
           alignHeader: 'center'
         }

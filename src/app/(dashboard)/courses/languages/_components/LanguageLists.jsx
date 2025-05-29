@@ -202,6 +202,17 @@ export default function LanguageLists() {
   }
 
   /**
+   * handle sort event
+   * @param column the column to sort by
+   */
+  const handleSort = column => {
+    const newSortBy = column.id
+    const newSortOrder = sortBy === newSortBy && sortOrder === 'asc' ? 'desc' : 'asc'
+
+    dispatch({ type: 'SET_SORT', payload: { sortOrder: newSortOrder, sortBy: newSortBy } })
+  }
+
+  /**
    * handle delete action
    * @param {*} event
    */
@@ -254,7 +265,7 @@ export default function LanguageLists() {
       <TableContainer>
         <Table stickyHeader>
           <TableHead>
-            <CustomTableHeader table={table} />
+            <CustomTableHeader table={table} handleSort={handleSort} isSortable={true} />
           </TableHead>
           <TableBody>
             <CustomTableBody

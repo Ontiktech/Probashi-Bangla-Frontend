@@ -4,7 +4,7 @@ import { apiResponse, fetchData } from '@/utils/api'
 
 export const getAllLanguages = async (page, limit, search, sortOrder = 'desc', sortBy = 'createdAt') => {
   try {
-    let url = `admin/languages?page=${page}&limit=${limit}&sort_order=${sortOrder}&sort_by=${sortBy}`
+    let url = `admin/languages?page=${page}&limit=${limit}&sortOrder=${sortOrder}&sortBy=${sortBy}`
 
     if (search) url += `&search=${search}`
 
@@ -15,7 +15,8 @@ export const getAllLanguages = async (page, limit, search, sortOrder = 'desc', s
     if (response?.statusCode === 200) {
       return {
         status: 'success',
-        items: response?.data?.languages
+        items: response?.data?.languages?.records ?? [],
+        totalItems: response?.data?.languages?.totalCount ?? 0
       }
     } else {
       throw new Error(response?.error?.message)

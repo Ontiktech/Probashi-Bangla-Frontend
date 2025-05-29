@@ -101,17 +101,17 @@ const CourseDetails = async ({ params: { id } }) => {
               </TableRow>
               <TableRow>
                 <TableCell>Language</TableCell>
-                <TableCell>{toCapitalize(course?.language)}</TableCell>
+                <TableCell>{toCapitalize(course?.language?.name ?? '')}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Target Language</TableCell>
-                <TableCell>{toCapitalize(course?.targetLanguage)}</TableCell>
+                <TableCell>{toCapitalize(course?.target_language?.name ?? '')}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Difficulty</TableCell>
                 <TableCell>
                   <Chip
-                    label={toCapitalize(course?.difficulty)}
+                    label={toCapitalize(course?.difficulty ?? '')}
                     size='small'
                     color='primary'
                     icon={<i className='ri-star-line'></i>}
