@@ -15,7 +15,7 @@ export const getAllCourses = async (page, limit, search, sortOrder = 'desc', sor
   try {
     let url = `admin/courses?page=${page}&limit=${limit}&sortOrder=${sortOrder.toUpperCase()}&sortBy=${sortBy}`
 
-    if (search) url += `&search=${search}`
+    if (search) url += `&searchText=${search}`
 
     const response = await fetchData(url, {
       method: 'GET'

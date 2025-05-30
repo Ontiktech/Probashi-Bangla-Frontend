@@ -4,12 +4,14 @@ import { useCallback, useEffect, useMemo, useReducer } from 'react'
 import {
   Avatar,
   Box,
+  Grid,
   Stack,
   Table,
   TableBody,
   TableContainer,
   TableHead,
   TablePagination,
+  TextField,
   Typography
 } from '@mui/material'
 
@@ -302,8 +304,25 @@ const UserListsTable = () => {
     dispatch({ type: 'SET_SELECTED_DELETE_ID', payload: id ?? null })
   }
 
+  const handleSearch = event => {
+    dispatch({ type: 'SET_SEARCH', payload: event.target.value })
+    dispatch({ type: 'SET_PAGE', payload: 1 })
+  }
+
   return (
     <>
+      <Grid container spacing={2} sx={{ my: 3 }}>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            label='Search'
+            placeholder='Type Something...'
+            size='small'
+            fullWidth
+            onChange={handleSearch}
+            value={search}
+          />
+        </Grid>
+      </Grid>
       <TableContainer>
         <Table stickyHeader>
           <TableHead>

@@ -53,7 +53,7 @@ export const getAllAppUsers = async (page, limit, search, sortOrder = 'desc', so
   try {
     let url = `admin/app-users?page=${page}&limit=${limit}&sortOrder=${sortOrder.toUpperCase()}&sortBy=${sortBy}`
 
-    if (search) url += `&search=${search}`
+    if (search) url += `&searchText=${search}`
 
     const response = await fetchData(url, {
       method: 'GET'

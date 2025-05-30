@@ -5,7 +5,7 @@ import CustomTableBody from '@/components/common/CustomTableBody'
 import CustomTableHeader from '@/components/common/CustomTableHeader'
 import Modal from '@/components/common/Modal'
 import { toCapitalize } from '@/utils/common'
-import { Chip, Table, TableBody, TableContainer, TableHead, TablePagination } from '@mui/material'
+import { Chip, Grid, Table, TableBody, TableContainer, TableHead, TablePagination, TextField } from '@mui/material'
 import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 import { debounce } from 'lodash'
 import { useCallback, useEffect, useMemo, useReducer } from 'react'
@@ -260,8 +260,30 @@ export default function LanguageLists() {
     dispatch({ type: 'SET_SELECTED_DELETE_ID', payload: id ?? null })
   }
 
+  /**
+   * search handler
+   * @param {*} event
+   * @returns
+   */
+  const handleSearch = event => {
+    dispatch({ type: 'SET_SEARCH', payload: event.target.value })
+    dispatch({ type: 'SET_PAGE', payload: 1 })
+  }
+
   return (
     <>
+      <Grid container spacing={2} sx={{ my: 3 }}>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            label='Search'
+            placeholder='Type Something...'
+            size='small'
+            fullWidth
+            onChange={handleSearch}
+            value={search}
+          />
+        </Grid>
+      </Grid>
       <TableContainer>
         <Table stickyHeader>
           <TableHead>
