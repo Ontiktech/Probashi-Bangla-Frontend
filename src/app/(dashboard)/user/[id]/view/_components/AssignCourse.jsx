@@ -100,8 +100,14 @@ const AssignCourse = ({ userId, courses }) => {
                 </TableCell>
                 <TableCell align='center'>
                   {index !== fields?.length - 1 ? (
-                    <Button variant='outlined' color='error' onClick={() => remove(index)} disabled={loading}>
-                      <i className='ri-delete-bin-7-fill'></i>
+                    <Button
+                      variant='outlined'
+                      color='error'
+                      onClick={() => remove(index)}
+                      disabled={loading}
+                      startIcon={<i className='ri-delete-bin-7-fill'></i>}
+                    >
+                      Remove Course
                     </Button>
                   ) : (
                     <Button
@@ -113,8 +119,9 @@ const AssignCourse = ({ userId, courses }) => {
                         })
                       }
                       disabled={loading}
+                      startIcon={<i className='ri-add-line'></i>}
                     >
-                      <i className='ri-add-line'></i>
+                      Add Course
                     </Button>
                   )}
                 </TableCell>

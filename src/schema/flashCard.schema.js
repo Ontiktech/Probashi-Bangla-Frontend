@@ -3,7 +3,7 @@ import * as yup from 'yup'
 const SUPPORTED_IMAGE_FORMATS = ['image/jpg', 'image/jpeg', 'image/png']
 const SUPPORTED_AUDIO_FORMATS = ['audio/mpeg']
 const IMAGE_MAX_SIZE = 5 * 1024 * 1024
-
+const AUDIO_SIZE = 1024 * 1024
 const baseSchema = {
   frontText: yup
     .string()
@@ -86,6 +86,6 @@ export const updateFlashCardSchema = yup.object().shape({
     .test('fileSize', 'File size is too large. Max size: 5MB', value => {
       if (!value) return true
 
-      return value && value.size <= IMAGE_MAX_SIZE
+      return value && value.size <= AUDIO_SIZE
     })
 })

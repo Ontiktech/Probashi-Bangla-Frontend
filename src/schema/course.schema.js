@@ -15,8 +15,8 @@ const baseSchema = {
     .string()
     .required('Please enter a target language!')
     .test('not-same-as-language', 'Language and Target Language must be different!', function (value) {
-      const { language } = this.parent
-      return value !== language
+      const { languageId } = this.parent
+      return value !== languageId
     }),
   difficulty: yup
     .string()
@@ -24,7 +24,7 @@ const baseSchema = {
     .oneOf(difficulties, 'Please select a valid difficulty!'),
   estimatedHours: yup
     .number()
-    .required('Please enter a estimated hours!')
+    .required('Please enter estimated hours!')
     .min(1, 'Estimated hours must be greater than 0!')
 }
 

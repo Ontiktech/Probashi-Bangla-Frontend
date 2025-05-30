@@ -2,7 +2,7 @@ import * as yup from 'yup'
 
 export const difficulties = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED']
 const SUPPORTED_FORMATS = ['audio/mpeg']
-const IMAGE_MAX_SIZE = 5 * 1024 * 1024
+const AUDIO_SIZE = 1024 * 1024
 
 const baseSchema = {
   title: yup.string().required('Please enter a title!').max(255, 'Title must be less than 255 characters!'),
@@ -32,7 +32,7 @@ export const createLessonSchema = yup.object().shape({
     .test('fileSize', 'File size is too large. Max size: 5MB', value => {
       if (!value) return true
 
-      return value && value.size <= IMAGE_MAX_SIZE
+      return value && value.size <= AUDIO_SIZE
     })
 })
 
@@ -49,6 +49,6 @@ export const updateLessonSchema = yup.object().shape({
     .test('fileSize', 'File size is too large. Max size: 5MB', value => {
       if (!value) return true
 
-      return value && value.size <= IMAGE_MAX_SIZE
+      return value && value.size <= AUDIO_SIZE
     })
 })
