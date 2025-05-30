@@ -11,8 +11,8 @@ import '@assets/iconify-icons/generated-icons.css'
 import { ToastContainer } from 'react-toastify'
 
 export const metadata = {
-  title: 'Probashi Kollan - A simple web app',
-  description: 'Probashi Kollan - A simple web app'
+  title: 'Probashi Kollan - A language learning app',
+  description: 'Probashi Kollan - A language learning app'
 }
 
 const RootLayout = ({ children }) => {

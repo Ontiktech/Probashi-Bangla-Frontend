@@ -116,6 +116,8 @@ const CreateNewCourse = () => {
             disabled={loading}
             error={!!errors?.languageId}
             helperText={errors.languageId?.message}
+            label='Language'
+            placeholder='Select language...'
           />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -125,6 +127,8 @@ const CreateNewCourse = () => {
             disabled={loading}
             error={!!errors?.targetLanguageId}
             helperText={errors.targetLanguageId?.message}
+            label='Target Language'
+            placeholder='Select target language...'
           />
         </Grid>
         <Grid item xs={12} md={6}>
